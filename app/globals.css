@@ -16,6 +16,14 @@
   --color-navy-dark: #071428;
   --color-flag-red: #CE1126;
   --color-flag-red-hover: #A50E1E;
+
+  --color-ink-900: #071428;
+  --color-ink-800: #0B1F3A;
+  --color-ink-700: #132743;
+  --color-ink-600: #1E3A5F;
+
+  --color-flag: #CE1126;
+  --color-flag-hover: #A50E1E;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -30,3 +38,112 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter), var(--font-noto-sans-arabic), Arial, Helvetica, sans-serif;
 }
+
+.bg-atmosphere {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 35%, rgba(206, 17, 38, 0.08), transparent 60%),
+    radial-gradient(ellipse 120% 90% at 50% 50%, #0B1F3A 0%, #071428 90%);
+}
+
+.card-shadow {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+.focus-accent:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #132743, 0 0 0 4px #CE1126;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes screen-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.screen-enter {
+  animation: screen-enter 0.25s ease-out;
+}
+
+/* Skeleton shimmer */
+@keyframes skel-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skel {
+  background: linear-gradient(90deg, #1E3A5F 25%, #2a4a70 50%, #1E3A5F 75%);
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* Card hover: animated red border glow + kicker pattern fade-in */
+.card {
+  position: relative;
+  transition: box-shadow 0.25s ease;
+  overflow: hidden;
+}
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/kicker_blobs_nobg.png");
+  background-repeat: repeat;
+  background-size: 320px auto;
+  background-position: center center;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.card:hover::after {
+  opacity: 0.055;
+}
+.card:hover {
+  box-shadow: 0 0 0 1.5px rgba(206, 17, 38, 0.55), 0 0 14px rgba(206, 17, 38, 0.08);
+}
+/* Ensure card content sits above the pattern layer */
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Dropdown shadow */
+.pop {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+/* Diagonal lines background pattern — center only, fades to edges */
+.pattern-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.028) 0px,
+    rgba(255, 255, 255, 0.028) 1px,
+    transparent 1px,
+    transparent 28px
+  );
+  -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 50%, black 0%, transparent 80%);
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 50%, black 0%, transparent 80%);
+}
+
+/* Mobile sheet slide animations */
+@keyframes sheet-in-ltr {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes sheet-in-rtl {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+.sheet-ltr { animation: sheet-in-ltr 0.25s ease-out; }
+.sheet-rtl { animation: sheet-in-rtl 0.25s ease-out; }
