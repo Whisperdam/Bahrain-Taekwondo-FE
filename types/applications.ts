@@ -193,6 +193,14 @@ export interface OfficialApplicationDetail extends ApplicationDetailBase {
 }
 
 export interface AcademyApplicationDetail extends ApplicationDetailBase {
+  // The applicant for an academy application is the owning coach — these come
+  // straight from AcademyApplicationDetailDTO (no username/userEmail base fields).
+  applicantCoachId: number | null;
+  applicantCoachFirstName: string | null;
+  applicantCoachLastName: string | null;
+  applicantCoachPhone: string | null;
+  applicantCoachEmail: string | null;
+
   proposedName: string;
   proposedLocation: string | null;
   proposedPhone: string | null;

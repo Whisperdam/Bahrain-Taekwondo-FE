@@ -358,12 +358,23 @@ function ApplicantCard({
     : null;
   const academy = isAcademy ? (app as AcademyApplicationDetail) : null;
 
+  // Academy applicant is the owning coach (applicantCoach* fields). Coach &
+  // Official carry firstName/lastName directly.
   const fullName = personal
     ? `${personal.firstName} ${personal.lastName}`
-    : app.username;
-  const initials = personal
-    ? `${personal.firstName?.[0] ?? ""}${personal.lastName?.[0] ?? ""}`.toUpperCase()
-    : (app.username?.[0] ?? "").toUpperCase();
+    : academy
+      ? `${academy.applicantCoachFirstName ?? ""} ${academy.applicantCoachLastName ?? ""}`.trim() ||
+        "—"
+      : "—";
+  const applicantEmail = personal?.email ?? academy?.applicantCoachEmail ?? null;
+  const applicantPhone = personal?.phone ?? academy?.applicantCoachPhone ?? null;
+  const initials = (
+    personal
+      ? `${personal.firstName?.[0] ?? ""}${personal.lastName?.[0] ?? ""}`
+      : academy
+        ? `${academy.applicantCoachFirstName?.[0] ?? ""}${academy.applicantCoachLastName?.[0] ?? ""}`
+        : ""
+  ).toUpperCase();
 
   return (
     <aside className="bg-ink-700 border border-ink-600/70 rounded-xl p-6">
@@ -373,24 +384,28 @@ function ApplicantCard({
         <div className="text-base font-semibold text-white mt-3">
           {fullName}
         </div>
-        <div
-          className="text-xs text-slate-400 mt-0.5 font-mono"
-          style={{ direction: "ltr" }}
-        >
-          {personal?.email ?? app.userEmail}
-        </div>
+        {applicantEmail && (
+          <div
+            className="text-xs text-slate-400 mt-0.5 font-mono"
+            style={{ direction: "ltr" }}
+          >
+            {applicantEmail}
+          </div>
+        )}
       </div>
       <div>
+        {applicantPhone && (
+          <InfoRow label={t.phone}>
+            <span
+              className="font-mono text-xs inline-block"
+              style={{ direction: "ltr" }}
+            >
+              {applicantPhone}
+            </span>
+          </InfoRow>
+        )}
         {personal && (
           <>
-            <InfoRow label={t.phone}>
-              <span
-                className="font-mono text-xs inline-block"
-                style={{ direction: "ltr" }}
-              >
-                {personal.phone}
-              </span>
-            </InfoRow>
             {"dateOfBirth" in personal && personal.dateOfBirth && (
               <InfoRow label={t.dob}>
                 {format(new Date(personal.dateOfBirth), "PP")}
@@ -410,11 +425,6 @@ function ApplicantCard({
               </InfoRow>
             )}
           </>
-        )}
-        {academy && (
-          <InfoRow label={t.proposedLocation}>
-            {academy.proposedLocation ?? "—"}
-          </InfoRow>
         )}
         <InfoRow label={t.appSubmittedOn}>
           {format(new Date(app.submittedAt), "PP")}

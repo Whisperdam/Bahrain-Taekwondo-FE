@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import type { LoginResponse, UserProfile } from "@/types/auth";
+import { isTokenExpired } from "./jwt";
 
 interface AuthState {
   token: string | null;
@@ -34,13 +35,24 @@ export const useAuthStore = create<AuthState>((set) => ({
   hydrate: () => {
     const token = localStorage.getItem("btf-token");
     const userStr = localStorage.getItem("btf-user");
-    if (token && userStr) {
-      try {
-        const user = JSON.parse(userStr) as UserProfile;
-        set({ token, user, isAuthenticated: true });
-      } catch {
-        set({ token: null, user: null, isAuthenticated: false });
-      }
+
+    // An expired (or missing/malformed) token must not count as authenticated.
+    // Purge it so the route guard sends the user to /login instead of letting
+    // them into the app with a token the server will reject anyway.
+    if (!token || isTokenExpired(token) || !userStr) {
+      localStorage.removeItem("btf-token");
+      localStorage.removeItem("btf-user");
+      set({ token: null, user: null, isAuthenticated: false });
+      return;
+    }
+
+    try {
+      const user = JSON.parse(userStr) as UserProfile;
+      set({ token, user, isAuthenticated: true });
+    } catch {
+      localStorage.removeItem("btf-token");
+      localStorage.removeItem("btf-user");
+      set({ token: null, user: null, isAuthenticated: false });
     }
   },
 }));
