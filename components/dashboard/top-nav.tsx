@@ -4,15 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Award,
+  Briefcase,
   ChevronDown,
+  FileText,
   LogOut,
   Medal,
   Menu,
+  Shield,
   User,
   X,
 } from "lucide-react";
 import { ShieldLogo } from "@/components/ui/shield-logo";
 import { LanguageToggle } from "@/components/ui/language-toggle";
+import { Avatar } from "@/components/ui/avatar";
 import { useLangStore } from "@/lib/i18n/store";
 import { useAuthStore } from "@/lib/auth/store";
 import { DASH_STRINGS } from "@/lib/i18n/dashboard-strings";
@@ -24,14 +28,6 @@ function getInitials(user: UserProfile): string {
   return (f + l).toUpperCase();
 }
 
-// ---- User Avatar ----
-function Avatar({ initials }: { initials: string }) {
-  return (
-    <span className="w-8 h-8 rounded-full bg-flag/20 border border-flag/40 text-flag font-semibold text-xs flex items-center justify-center shrink-0">
-      {initials}
-    </span>
-  );
-}
 
 // ---- Dropdown menu item ----
 function MenuItem({
@@ -95,6 +91,8 @@ function UserDropdown({ user }: { user: UserProfile }) {
 
   const showCoach = !user.roles.includes("ROLE_COACH");
   const showOfficial = !user.roles.includes("ROLE_OFFICIAL");
+  const isCoach = user.roles.includes("ROLE_COACH");
+  const isAdmin = user.roles.includes("ROLE_ADMIN");
 
   return (
     <div ref={ref} className="relative">
@@ -104,7 +102,7 @@ function UserDropdown({ user }: { user: UserProfile }) {
         aria-expanded={open}
         className="flex items-center gap-2 px-1.5 py-1 rounded-full hover:bg-ink-700 transition-colors"
       >
-        <Avatar initials={initials} />
+        <Avatar initials={initials} photoUrl={user.profilePhotoUrl} alt={user.fullName} />
         <span className="hidden md:inline text-sm text-slate-200 font-medium max-w-[140px] truncate">
           {user.fullName}
         </span>
@@ -130,6 +128,13 @@ function UserDropdown({ user }: { user: UserProfile }) {
           </div>
 
           <MenuItem icon={User} label={t.myProfile} onClick={() => { router.push("/profile"); setOpen(false); }} />
+          <MenuItem icon={FileText} label={t.myApplications} onClick={() => { router.push("/applications"); setOpen(false); }} />
+          {isCoach && (
+            <MenuItem icon={Briefcase} label={t.coachPortal} onClick={() => { router.push("/coach"); setOpen(false); }} />
+          )}
+          {isAdmin && (
+            <MenuItem icon={Shield} label={t.adminPanel} onClick={() => { router.push("/admin"); setOpen(false); }} />
+          )}
 
           {(showCoach || showOfficial) && (
             <>
@@ -204,6 +209,8 @@ function MobileSheet({
 
   const showCoach = !user.roles.includes("ROLE_COACH");
   const showOfficial = !user.roles.includes("ROLE_OFFICIAL");
+  const isCoach = user.roles.includes("ROLE_COACH");
+  const isAdmin = user.roles.includes("ROLE_ADMIN");
 
   function handleLogout() {
     logout();
@@ -233,9 +240,12 @@ function MobileSheet({
         {/* User info */}
         <div className="p-4 border-b border-ink-600/70">
           <div className="flex items-center gap-3">
-            <span className="w-10 h-10 rounded-full bg-flag/20 border border-flag/40 text-flag font-semibold flex items-center justify-center">
-              {initials}
-            </span>
+            <Avatar
+              initials={initials}
+              photoUrl={user.profilePhotoUrl}
+              alt={user.fullName}
+              size={40}
+            />
             <div className="min-w-0">
               <div className="text-sm font-semibold truncate">{user.fullName}</div>
               <div
@@ -251,6 +261,13 @@ function MobileSheet({
         {/* Nav items */}
         <nav className="flex-1 overflow-y-auto py-2">
           <SheetItem icon={User} label={t.myProfile} onClick={() => router.push("/profile")} onClose={onClose} />
+          <SheetItem icon={FileText} label={t.myApplications} onClick={() => router.push("/applications")} onClose={onClose} />
+          {isCoach && (
+            <SheetItem icon={Briefcase} label={t.coachPortal} onClick={() => router.push("/coach")} onClose={onClose} />
+          )}
+          {isAdmin && (
+            <SheetItem icon={Shield} label={t.adminPanel} onClick={() => router.push("/admin")} onClose={onClose} />
+          )}
 
           {(showCoach || showOfficial) && (
             <>
@@ -290,8 +307,8 @@ export function TopNav({ user }: { user: UserProfile }) {
   return (
     <header className="sticky top-0 z-30 bg-ink-800/80 backdrop-blur border-b border-ink-600/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
-        {/* Left: logo */}
-        <a href="#" className="flex items-center gap-2.5 shrink-0">
+        {/* Left: logo — links to the dashboard */}
+        <a href="/dashboard" className="flex items-center gap-2.5 shrink-0 hover:opacity-90 transition-opacity">
           <ShieldLogo size={32} />
           <div className="hidden sm:block leading-tight">
             <div className="text-sm font-semibold text-white">

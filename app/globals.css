@@ -39,6 +39,27 @@ body {
   font-family: var(--font-inter), var(--font-noto-sans-arabic), Arial, Helvetica, sans-serif;
 }
 
+/* Tell the browser to draw native UI (select dropdowns, scrollbars, form
+   controls, date pickers) in dark mode so they don't pop white against our
+   ink-themed surfaces. */
+:root {
+  color-scheme: dark;
+}
+
+/* Fallback for browsers that don't honor color-scheme on native <option> popups
+   (older Chromium / some Linux builds). We can't fully restyle the popup, but
+   we can at least force readable colors on the options themselves. */
+select option,
+select optgroup {
+  background-color: #132743; /* ink-700 */
+  color: #ffffff;
+}
+select option:checked,
+select option:hover {
+  background-color: #1E3A5F; /* ink-600 */
+  color: #ffffff;
+}
+
 .bg-atmosphere {
   background:
     radial-gradient(ellipse 80% 60% at 50% 35%, rgba(206, 17, 38, 0.08), transparent 60%),

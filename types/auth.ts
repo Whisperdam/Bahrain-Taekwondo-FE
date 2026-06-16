@@ -7,6 +7,10 @@ export interface UserProfile {
   fullName: string;
   status: "PENDING" | "ACTIVE" | "SUSPENDED";
   roles: string[];
+  /** True when the user has a profile photo document attached. */
+  hasProfilePhoto?: boolean;
+  /** Presigned R2 URL for the user's profile photo, or null if none. */
+  profilePhotoUrl?: string | null;
 }
 
 export interface LoginRequest {
