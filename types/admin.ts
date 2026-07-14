@@ -32,3 +32,33 @@ export interface UpdateUserRolesRequest {
 export interface RejectRequest {
   reason: string;
 }
+
+// ── Tournament / Academy admin CRUD ─────────────────────────────────────────
+
+export type TournamentType = "NATIONAL" | "INTERNATIONAL" | "REGIONAL";
+export type TournamentStatus = "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
+
+export interface TournamentRequest {
+  tournamentName: string;
+  description?: string;
+  tournamentType?: TournamentType;
+  venue?: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string;
+  registrationDeadline?: string;
+  maxParticipants?: number;
+  status?: TournamentStatus;
+  bannerImageUrl?: string;
+}
+
+export type AcademyStatus = "ACTIVE" | "INACTIVE";
+
+export interface AcademyRequest {
+  academyName: string;
+  location?: string;
+  phone?: string;
+  email?: string;
+  establishedDate?: string;
+  owningCoachId?: number;
+  status?: AcademyStatus;
+}

@@ -1,11 +1,15 @@
 import apiClient from "@/lib/api/client";
-import type { PageResponse } from "@/types/dashboard";
+import type { PageResponse, TournamentDTO, AcademyDTO } from "@/types/dashboard";
 import type {
   AdminUser,
   UpdateUserRolesRequest,
   RejectRequest,
   AppRole,
   UserStatus,
+  TournamentRequest,
+  TournamentStatus,
+  AcademyRequest,
+  AcademyStatus,
 } from "@/types/admin";
 import type {
   ApplicationStatus,
@@ -167,6 +171,101 @@ export async function replaceUserRoles(
   const res = await apiClient.put<AdminUser>(
     `/api/admin/users/${id}/roles`,
     body,
+  );
+  return res.data;
+}
+
+// ── Tournaments (admin CRUD; reads use the public endpoint) ────────────────
+export interface ListTournamentsParams {
+  status?: TournamentStatus;
+  page?: number;
+  size?: number;
+}
+
+export async function listTournamentsAdmin(
+  params: ListTournamentsParams = {},
+): Promise<PageResponse<TournamentDTO>> {
+  const p = new URLSearchParams();
+  if (params.status) p.set("status", params.status);
+  if (params.page != null) p.set("page", String(params.page));
+  if (params.size != null) p.set("size", String(params.size));
+  const qs = p.toString() ? `?${p}` : "";
+  const res = await apiClient.get<PageResponse<TournamentDTO>>(
+    `/api/tournaments${qs}`,
+  );
+  return res.data;
+}
+
+export async function createTournament(
+  body: TournamentRequest,
+): Promise<TournamentDTO> {
+  const res = await apiClient.post<TournamentDTO>(
+    "/api/admin/tournaments",
+    body,
+  );
+  return res.data;
+}
+
+export async function updateTournament(
+  id: number,
+  body: TournamentRequest,
+): Promise<TournamentDTO> {
+  const res = await apiClient.put<TournamentDTO>(
+    `/api/admin/tournaments/${id}`,
+    body,
+  );
+  return res.data;
+}
+
+export async function deleteTournament(id: number): Promise<void> {
+  await apiClient.delete(`/api/admin/tournaments/${id}`);
+}
+
+// ── Academies (admin CRUD; list includes INACTIVE) ─────────────────────────
+export interface ListAcademiesParams {
+  status?: AcademyStatus;
+  page?: number;
+  size?: number;
+}
+
+export async function listAcademiesAdmin(
+  params: ListAcademiesParams = {},
+): Promise<PageResponse<AcademyDTO>> {
+  const p = new URLSearchParams();
+  if (params.status) p.set("status", params.status);
+  if (params.page != null) p.set("page", String(params.page));
+  if (params.size != null) p.set("size", String(params.size));
+  const qs = p.toString() ? `?${p}` : "";
+  const res = await apiClient.get<PageResponse<AcademyDTO>>(
+    `/api/admin/academies${qs}`,
+  );
+  return res.data;
+}
+
+export async function createAcademy(body: AcademyRequest): Promise<AcademyDTO> {
+  const res = await apiClient.post<AcademyDTO>("/api/admin/academies", body);
+  return res.data;
+}
+
+export async function updateAcademy(
+  id: number,
+  body: AcademyRequest,
+): Promise<AcademyDTO> {
+  const res = await apiClient.put<AcademyDTO>(
+    `/api/admin/academies/${id}`,
+    body,
+  );
+  return res.data;
+}
+
+export async function deactivateAcademy(id: number): Promise<AcademyDTO> {
+  const res = await apiClient.delete<AcademyDTO>(`/api/admin/academies/${id}`);
+  return res.data;
+}
+
+export async function activateAcademy(id: number): Promise<AcademyDTO> {
+  const res = await apiClient.put<AcademyDTO>(
+    `/api/admin/academies/${id}/activate`,
   );
   return res.data;
 }

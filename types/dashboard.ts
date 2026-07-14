@@ -35,9 +35,12 @@ export interface AcademyDTO {
   academyId: number;
   academyName: string;
   location: string;
-  phone?: string;
-  email?: string;
-  establishedDate?: string;
+  phone?: string | null;
+  email?: string | null;
+  establishedDate?: string | null;
+  status?: "ACTIVE" | "INACTIVE";
+  owningCoachId?: number | null;
+  owningCoachName?: string | null;
 }
 
 export interface PageResponse<T> {

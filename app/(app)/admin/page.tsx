@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Award, Medal, Building2, Users, ArrowRight, ChevronRight } from "lucide-react";
+import { Award, Medal, Building2, Users, Trophy, ArrowRight, ChevronRight } from "lucide-react";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -145,13 +145,23 @@ export default function AdminLandingPage() {
 
         <section className="mt-10">
           <SectionHeader title={t.quickLinks} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <QuickLink
               icon={Award}
               label={t.qlApplications}
               href="/admin/applications"
             />
             <QuickLink icon={Users} label={t.qlUsers} href="/admin/users" />
+            <QuickLink
+              icon={Trophy}
+              label={t.qlTournaments}
+              href="/admin/tournaments"
+            />
+            <QuickLink
+              icon={Building2}
+              label={t.qlAcademies}
+              href="/admin/academies"
+            />
           </div>
         </section>
       </main>
