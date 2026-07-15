@@ -27,6 +27,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/ui/pagination";
 import { DropdownMenu, MenuItem } from "@/components/ui/dropdown-menu";
+import { ErrorState } from "@/components/ui/error-state";
 import { useAuth } from "@/hooks/use-auth";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useLangStore } from "@/lib/i18n/store";
@@ -201,7 +202,15 @@ export default function AdminUsersPage() {
         <div className="bg-ink-700 border border-ink-600/70 rounded-xl overflow-hidden">
           {usersQ.isLoading && <UsersSkeleton />}
 
-          {!usersQ.isLoading && rows.length === 0 && (
+          {usersQ.isError && (
+            <ErrorState
+              message={t.loadFailed}
+              retryLabel={t.retry}
+              onRetry={() => usersQ.refetch()}
+            />
+          )}
+
+          {!usersQ.isLoading && !usersQ.isError && rows.length === 0 && (
             <div className="p-12 text-center">
               <div className="inline-flex w-12 h-12 rounded-full bg-ink-800 border border-ink-600 text-slate-400 items-center justify-center mb-3">
                 <Users size={22} />
@@ -210,7 +219,7 @@ export default function AdminUsersPage() {
             </div>
           )}
 
-          {!usersQ.isLoading && rows.length > 0 && (
+          {!usersQ.isLoading && !usersQ.isError && rows.length > 0 && (
             <>
               <div className="hidden md:grid grid-cols-[2fr_2fr_1.6fr_1fr_1fr_44px] px-5 py-2.5 text-[10px] uppercase tracking-[0.16em] text-slate-500 border-b border-ink-600/60 font-medium">
                 <div>{t.colName}</div>

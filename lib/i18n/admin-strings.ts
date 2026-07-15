@@ -248,6 +248,8 @@ export const ADMIN_STRINGS = {
 
     filterAllStatuses: "All",
     actionEdit: "Edit",
+    loadFailed: "Couldn't load data. Please try again.",
+    retry: "Retry",
   },
   ar: {
     adminPanel: "لوحة الإدارة",
@@ -484,6 +486,8 @@ export const ADMIN_STRINGS = {
 
     filterAllStatuses: "الكل",
     actionEdit: "تعديل",
+    loadFailed: "تعذر تحميل البيانات. حاول مرة أخرى.",
+    retry: "إعادة المحاولة",
   },
 } as const;
 

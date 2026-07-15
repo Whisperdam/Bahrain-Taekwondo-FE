@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Calendar, MapPin, Trophy, ArrowRight } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { DASH_STRINGS } from "@/lib/i18n/dashboard-strings";
@@ -102,10 +103,13 @@ export function TournamentsSection({ data, isLoading, lang }: TournamentsSection
         <h2 id="tour-h" className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
           {t.tournaments}
         </h2>
-        <button className="shrink-0 whitespace-nowrap text-sm text-flag hover:text-flag-hover font-medium inline-flex items-center gap-1.5 transition-colors">
+        <Link
+          href="/tournaments"
+          className="shrink-0 whitespace-nowrap text-sm text-flag hover:text-flag-hover font-medium inline-flex items-center gap-1.5 transition-colors"
+        >
           <span>{t.viewAll}</span>
           <span className="rtl:rotate-180"><ArrowRight size={14} /></span>
-        </button>
+        </Link>
       </div>
 
       {isLoading && (

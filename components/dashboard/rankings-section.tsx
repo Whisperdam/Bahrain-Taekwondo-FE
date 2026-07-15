@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Trophy, ArrowRight } from "lucide-react";
 import { DASH_STRINGS } from "@/lib/i18n/dashboard-strings";
 import type { DashLang } from "@/lib/i18n/dashboard-strings";
@@ -57,10 +58,13 @@ export function RankingsSection({ data, isLoading, lang }: RankingsSectionProps)
           </span>
         </h2>
         {hasData && (
-          <button className="shrink-0 whitespace-nowrap text-sm text-flag hover:text-flag-hover font-medium inline-flex items-center gap-1.5 transition-colors">
+          <Link
+            href="/rankings"
+            className="shrink-0 whitespace-nowrap text-sm text-flag hover:text-flag-hover font-medium inline-flex items-center gap-1.5 transition-colors"
+          >
             <span>{t.viewFullRankings}</span>
             <span className="rtl:rotate-180"><ArrowRight size={14} /></span>
-          </button>
+          </Link>
         )}
       </div>
 

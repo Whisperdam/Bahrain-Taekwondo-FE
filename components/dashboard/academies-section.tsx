@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
 import { DASH_STRINGS } from "@/lib/i18n/dashboard-strings";
 import type { DashLang } from "@/lib/i18n/dashboard-strings";
@@ -45,10 +46,13 @@ export function AcademiesSection({ data, isLoading, lang }: AcademiesSectionProp
         <h2 id="acad-h" className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
           {t.academies}
         </h2>
-        <button className="shrink-0 whitespace-nowrap text-sm text-flag hover:text-flag-hover font-medium inline-flex items-center gap-1.5 transition-colors">
+        <Link
+          href="/academies"
+          className="shrink-0 whitespace-nowrap text-sm text-flag hover:text-flag-hover font-medium inline-flex items-center gap-1.5 transition-colors"
+        >
           <span>{t.viewAll}</span>
           <span className="rtl:rotate-180"><ArrowRight size={14} /></span>
-        </button>
+        </Link>
       </div>
 
       {isLoading && (
