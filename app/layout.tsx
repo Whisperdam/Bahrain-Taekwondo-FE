@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 
@@ -27,7 +28,18 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${notoSansArabic.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* Runs before any React/Tailwind paint so a saved non-default theme
+            (dark-mono / light) applies immediately — no flash of the Dark
+            Red default on reload. Mirrors lib/theme/store.ts's localStorage
+            key and "no attribute for dark-red" convention. Next.js hoists
+            beforeInteractive scripts into the real <head> regardless of
+            where they're declared in JSX. */}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`(function(){try{var t=localStorage.getItem('btf-theme');if(t==='dark-mono'||t==='light'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`}
+        </Script>
+        {children}
+      </body>
     </html>
   );
 }

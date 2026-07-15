@@ -100,7 +100,7 @@ function VerifyEmailContent() {
             </p>
             <Link
               href="/login"
-              className="inline-block bg-flag hover:bg-flag-hover text-white text-sm font-semibold rounded-lg py-2.5 px-6 transition-colors"
+              className="inline-block bg-flag hover:bg-flag-hover text-accent-foreground text-sm font-semibold rounded-lg py-2.5 px-6 transition-colors"
             >
               {lang === "ar" ? "تسجيل الدخول" : "Sign in"}
             </Link>

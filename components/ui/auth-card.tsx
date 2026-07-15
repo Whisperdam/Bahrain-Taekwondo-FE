@@ -3,6 +3,7 @@
 import * as React from "react";
 import { ShieldLogo } from "./shield-logo";
 import { LanguageToggle } from "./language-toggle";
+import { ThemeToggle } from "./theme-toggle";
 import { useLangStore } from "@/lib/i18n/store";
 import { STRINGS } from "@/lib/i18n/translations";
 
@@ -21,7 +22,10 @@ export function AuthCard({ children, screenKey, compact }: AuthCardProps) {
       dir={isAr ? "rtl" : "ltr"}
       className={`relative w-full max-w-md mx-auto bg-ink-700 sm:rounded-xl card-shadow border border-ink-600/60 ${isAr ? "font-arabic" : "font-sans"} ${compact ? "p-6 sm:p-7" : "p-7 sm:p-9"} min-h-screen sm:min-h-0`}
     >
-      <LanguageToggle absolute />
+      <div className="absolute top-4 ltr:right-4 rtl:left-4 flex items-center gap-2">
+        <ThemeToggle />
+        <LanguageToggle />
+      </div>
 
       {/* Logo block */}
       <div className="flex flex-col items-center text-center pt-2 pb-5">

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { ShieldLogo } from "@/components/ui/shield-logo";
 import { LanguageToggle } from "@/components/ui/language-toggle";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { useLangStore } from "@/lib/i18n/store";
 import { useAuthStore } from "@/lib/auth/store";
@@ -288,8 +289,12 @@ function MobileSheet({
           <SheetItem icon={LogOut} label={t.logout} onClick={handleLogout} danger onClose={onClose} />
         </nav>
 
-        {/* Language toggle */}
+        {/* Theme + language toggles */}
         <div className="p-4 border-t border-ink-600/70 flex items-center justify-between">
+          <span className="text-xs text-slate-500 uppercase tracking-[0.14em]">{t.tweakTheme}</span>
+          <ThemeToggle />
+        </div>
+        <div className="px-4 pb-4 flex items-center justify-between">
           <span className="text-xs text-slate-500 uppercase tracking-[0.14em]">{t.tweakLang}</span>
           <LanguageToggle />
         </div>
@@ -330,7 +335,8 @@ export function TopNav({ user }: { user: UserProfile }) {
 
         {/* Right */}
         <div className="flex items-center gap-2 sm:gap-3 ltr:ml-auto rtl:mr-auto lg:ml-0 lg:mr-0">
-          <div className="hidden sm:block">
+          <div className="hidden sm:flex items-center gap-2">
+            <ThemeToggle />
             <LanguageToggle />
           </div>
           <div className="hidden lg:block">

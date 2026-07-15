@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { ShieldLogo } from "@/components/ui/shield-logo";
 import { LanguageToggle } from "@/components/ui/language-toggle";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { useLangStore } from "@/lib/i18n/store";
 
@@ -43,8 +44,9 @@ export function ErrorPage({
     >
       <div className="pattern-bg" aria-hidden="true" />
       <div className="relative z-10 w-full max-w-xl mx-auto text-center">
-        {/* Lang toggle */}
-        <div className="absolute top-0 ltr:right-0 rtl:left-0">
+        {/* Theme + lang toggles */}
+        <div className="absolute top-0 ltr:right-0 rtl:left-0 flex items-center gap-2">
+          <ThemeToggle />
           <LanguageToggle />
         </div>
 

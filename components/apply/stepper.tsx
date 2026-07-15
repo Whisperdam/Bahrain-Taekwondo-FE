@@ -36,7 +36,7 @@ export function Stepper({ steps, current, onJump }: StepperProps) {
               <span
                 className={cn(
                   "shrink-0 w-7 h-7 rounded-full border text-xs font-semibold flex items-center justify-center transition-colors",
-                  done && "bg-flag border-flag text-white",
+                  done && "bg-flag border-flag text-accent-foreground",
                   active && "bg-flag/10 border-flag text-flag",
                   !done && !active && "bg-ink-800 border-ink-600 text-slate-500",
                 )}

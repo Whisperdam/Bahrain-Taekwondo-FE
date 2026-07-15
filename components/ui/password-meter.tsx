@@ -8,7 +8,9 @@ interface PasswordMeterProps {
 }
 
 const COLORS = ["#EF4444", "#F59E0B", "#EAB308", "#22C55E"];
-const EMPTY_COLOR = "#1E3A5F";
+// Matches the .skel shimmer's base shade so an empty meter segment blends
+// with the rest of the theme's muted-fill tone (var(--ink-600)).
+const EMPTY_COLOR = "var(--ink-600)";
 
 export function PasswordMeter({ value }: PasswordMeterProps) {
   const { t } = useLangStore();

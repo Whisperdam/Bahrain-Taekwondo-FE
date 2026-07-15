@@ -47,6 +47,7 @@ export const DASH_STRINGS = {
     rights: "All rights reserved.",
     address: "Isa Sports City, Riffa, Kingdom of Bahrain",
     tweakLang: "Language",
+    tweakTheme: "Theme",
   },
   ar: {
     fedFull: "اتحاد البحرين للتايكواندو",
@@ -95,6 +96,7 @@ export const DASH_STRINGS = {
     rights: "جميع الحقوق محفوظة.",
     address: "مدينة عيسى الرياضية، الرفاع، مملكة البحرين",
     tweakLang: "اللغة",
+    tweakTheme: "المظهر",
   },
 } as const;
 

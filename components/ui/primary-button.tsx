@@ -35,7 +35,7 @@ export function PrimaryButton({
       type="submit"
       disabled={loading || disabled}
       className={cn(
-        "w-full bg-flag hover:bg-flag-hover disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg py-2.5 px-4 transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-ink-700 focus:ring-flag",
+        "w-full bg-flag hover:bg-flag-hover disabled:opacity-60 disabled:cursor-not-allowed text-accent-foreground text-sm font-semibold rounded-lg py-2.5 px-4 transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-ink-700 focus:ring-flag",
         className,
       )}
       {...props}

@@ -28,7 +28,7 @@ export function LanguageToggle({ absolute = false }: LanguageToggleProps) {
         aria-label="English"
         className={`px-2.5 py-1 rounded-full transition-colors ${
           lang === "en"
-            ? "bg-flag text-white"
+            ? "bg-flag text-accent-foreground"
             : "text-slate-400 hover:text-flag"
         }`}
       >
@@ -41,7 +41,7 @@ export function LanguageToggle({ absolute = false }: LanguageToggleProps) {
         aria-label="العربية"
         className={`px-2.5 py-1 rounded-full transition-colors font-arabic ${
           lang === "ar"
-            ? "bg-flag text-white"
+            ? "bg-flag text-accent-foreground"
             : "text-slate-400 hover:text-flag"
         }`}
       >

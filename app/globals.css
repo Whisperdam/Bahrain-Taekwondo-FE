@@ -1,78 +1,207 @@
 @import "tailwindcss";
 
+/* =================================================================
+   THEME TOKENS
+   Three switchable themes, toggled via [data-theme] on <html>:
+     (default / no attribute) → Dark Red   — current navy + brand red
+     [data-theme="dark-mono"] → Dark Mono  — near-black + white/gray accent
+     [data-theme="light"]     → Light      — white surfaces + brand red
+
+   Every color used anywhere in the app funnels through the custom
+   properties below. Components never hardcode hex — they use Tailwind
+   classes (bg-ink-700, text-flag, text-white, text-slate-400, etc.) whose
+   underlying --color-* variable is redefined per theme here. Flipping
+   [data-theme] restyles the whole app with zero component changes.
+   ================================================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ---- Dark Red (default) ---- */
+  --ink-900: #071428;
+  --ink-800: #0B1F3A;
+  --ink-700: #132743;
+  --ink-600: #1E3A5F;
+  --ink-500: #294B73;
+  --flag: #CE1126;
+  --flag-hover: #A50E1E;
+  --flag-rgb: 206, 17, 38;
+  --accent-foreground: #ffffff;
+
+  --fg-primary: #ffffff;         /* overrides Tailwind's `white` */
+  --fg-slate-200: #E2E8F0;
+  --fg-slate-300: #CBD5E1;
+  --fg-slate-400: #94A3B8;
+  --fg-slate-500: #64748B;
+  --fg-slate-600: #475569;
+
+  /* Chip/status hues — only the "text" shades need per-theme tuning;
+     bg/border variants stay at low alpha and read fine on any surface. */
+  --chip-emerald-300: #6EE7B7;
+  --chip-emerald-500: #10B981;
+  --chip-amber-300: #FCD34D;
+  --chip-amber-500: #F59E0B;
+  --chip-sky-300: #7DD3FC;
+  --chip-sky-500: #0EA5E9;
+  --chip-red-300: #FCA5A5;
+  --chip-red-400: #F87171;
+  --chip-red-500: #EF4444;
+  --chip-orange-400: #FB923C;
+
+  --pattern-rgb: 255, 255, 255;  /* diagonal-line background pattern */
+  --skel-base: #1E3A5F;
+  --skel-highlight: #2a4a70;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 0 rgba(255, 255, 255, 0.04) inset;
+  --native-color-scheme: dark;
+}
+
+[data-theme="dark-mono"] {
+  --ink-900: #0A0A0A;
+  --ink-800: #141414;
+  --ink-700: #1B1B1B;
+  --ink-600: #2E2E2E;
+  --ink-500: #444444;
+  --flag: #E4E4E7;
+  --flag-hover: #FFFFFF;
+  --flag-rgb: 228, 228, 231;
+  --accent-foreground: #0A0A0A;
+
+  --fg-primary: #ffffff;
+  --fg-slate-200: #E2E8F0;
+  --fg-slate-300: #CBD5E1;
+  --fg-slate-400: #94A3B8;
+  --fg-slate-500: #64748B;
+  --fg-slate-600: #475569;
+
+  --chip-emerald-300: #6EE7B7;
+  --chip-emerald-500: #10B981;
+  --chip-amber-300: #FCD34D;
+  --chip-amber-500: #F59E0B;
+  --chip-sky-300: #7DD3FC;
+  --chip-sky-500: #0EA5E9;
+  --chip-red-300: #FCA5A5;
+  --chip-red-400: #F87171;
+  --chip-red-500: #EF4444;
+  --chip-orange-400: #FB923C;
+
+  --pattern-rgb: 255, 255, 255;
+  --skel-base: #2E2E2E;
+  --skel-highlight: #3D3D3D;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+  --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 0 rgba(255, 255, 255, 0.03) inset;
+  --native-color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --ink-900: #F8FAFC;
+  --ink-800: #FFFFFF;
+  --ink-700: #FFFFFF;
+  --ink-600: #E2E8F0;
+  --ink-500: #CBD5E1;
+  --flag: #CE1126;
+  --flag-hover: #A50E1E;
+  --flag-rgb: 206, 17, 38;
+  --accent-foreground: #ffffff;
+
+  --fg-primary: #0F172A;         /* was Tailwind `white` — now near-black */
+  --fg-slate-200: #1E293B;
+  --fg-slate-300: #334155;
+  --fg-slate-400: #64748B;
+  --fg-slate-500: #94A3B8;
+  --fg-slate-600: #CBD5E1;
+
+  --chip-emerald-300: #047857;
+  --chip-emerald-500: #10B981;
+  --chip-amber-300: #B45309;
+  --chip-amber-500: #F59E0B;
+  --chip-sky-300: #0369A1;
+  --chip-sky-500: #0EA5E9;
+  --chip-red-300: #B91C1C;
+  --chip-red-400: #DC2626;
+  --chip-red-500: #EF4444;
+  --chip-orange-400: #C2410C;
+
+  --pattern-rgb: 15, 23, 42;
+  --skel-base: #E2E8F0;
+  --skel-highlight: #F1F5F9;
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-pop: 0 10px 30px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.06);
+  --native-color-scheme: light;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
   --font-arabic: var(--font-noto-sans-arabic);
 
-  --color-navy: #0B1F3A;
-  --color-navy-light: #132743;
-  --color-navy-dark: #071428;
-  --color-flag-red: #CE1126;
-  --color-flag-red-hover: #A50E1E;
+  --color-ink-900: var(--ink-900);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-600: var(--ink-600);
+  --color-ink-500: var(--ink-500);
+  --color-flag: var(--flag);
+  --color-flag-hover: var(--flag-hover);
+  --color-accent-foreground: var(--accent-foreground);
 
-  --color-ink-900: #071428;
-  --color-ink-800: #0B1F3A;
-  --color-ink-700: #132743;
-  --color-ink-600: #1E3A5F;
+  /* Re-point Tailwind's own built-in palette vars at our theme tokens —
+     every text-white / text-slate-400 / bg-emerald-500 etc. across the app
+     becomes theme-reactive with zero component changes. */
+  --color-white: var(--fg-primary);
+  --color-slate-200: var(--fg-slate-200);
+  --color-slate-300: var(--fg-slate-300);
+  --color-slate-400: var(--fg-slate-400);
+  --color-slate-500: var(--fg-slate-500);
+  --color-slate-600: var(--fg-slate-600);
 
-  --color-flag: #CE1126;
-  --color-flag-hover: #A50E1E;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-emerald-300: var(--chip-emerald-300);
+  --color-emerald-500: var(--chip-emerald-500);
+  --color-amber-300: var(--chip-amber-300);
+  --color-amber-500: var(--chip-amber-500);
+  --color-sky-300: var(--chip-sky-300);
+  --color-sky-500: var(--chip-sky-500);
+  --color-red-300: var(--chip-red-300);
+  --color-red-400: var(--chip-red-400);
+  --color-red-500: var(--chip-red-500);
+  --color-orange-400: var(--chip-orange-400);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--ink-900);
+  color: var(--fg-primary);
   font-family: var(--font-inter), var(--font-noto-sans-arabic), Arial, Helvetica, sans-serif;
 }
 
 /* Tell the browser to draw native UI (select dropdowns, scrollbars, form
-   controls, date pickers) in dark mode so they don't pop white against our
-   ink-themed surfaces. */
+   controls, date pickers) in the theme's color scheme so they don't clash
+   with our surfaces. */
 :root {
-  color-scheme: dark;
+  color-scheme: var(--native-color-scheme);
 }
 
-/* Fallback for browsers that don't honor color-scheme on native <option> popups
-   (older Chromium / some Linux builds). We can't fully restyle the popup, but
-   we can at least force readable colors on the options themselves. */
+/* Fallback for browsers that don't honor color-scheme on native <option>
+   popups (older Chromium / some Linux builds). */
 select option,
 select optgroup {
-  background-color: #132743; /* ink-700 */
-  color: #ffffff;
+  background-color: var(--ink-700);
+  color: var(--fg-primary);
 }
 select option:checked,
 select option:hover {
-  background-color: #1E3A5F; /* ink-600 */
-  color: #ffffff;
+  background-color: var(--ink-600);
+  color: var(--fg-primary);
 }
 
 .bg-atmosphere {
   background:
-    radial-gradient(ellipse 80% 60% at 50% 35%, rgba(206, 17, 38, 0.08), transparent 60%),
-    radial-gradient(ellipse 120% 90% at 50% 50%, #0B1F3A 0%, #071428 90%);
+    radial-gradient(ellipse 80% 60% at 50% 35%, rgba(var(--flag-rgb), 0.08), transparent 60%),
+    radial-gradient(ellipse 120% 90% at 50% 50%, var(--ink-800) 0%, var(--ink-900) 90%);
 }
 
 .card-shadow {
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  box-shadow: var(--shadow-card);
 }
 
 .focus-accent:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #132743, 0 0 0 4px #CE1126;
+  box-shadow: 0 0 0 2px var(--ink-700), 0 0 0 4px var(--flag);
 }
 
 @keyframes spin {
@@ -98,13 +227,13 @@ select option:hover {
   100% { background-position: -200% 0; }
 }
 .skel {
-  background: linear-gradient(90deg, #1E3A5F 25%, #2a4a70 50%, #1E3A5F 75%);
+  background: linear-gradient(90deg, var(--skel-base) 25%, var(--skel-highlight) 50%, var(--skel-base) 75%);
   background-size: 200% 100%;
   animation: skel-shimmer 1.5s ease-in-out infinite;
   border-radius: 4px;
 }
 
-/* Card hover: animated red border glow + kicker pattern fade-in */
+/* Card hover: animated accent border glow + kicker pattern fade-in */
 .card {
   position: relative;
   transition: box-shadow 0.25s ease;
@@ -127,7 +256,7 @@ select option:hover {
   opacity: 0.055;
 }
 .card:hover {
-  box-shadow: 0 0 0 1.5px rgba(206, 17, 38, 0.55), 0 0 14px rgba(206, 17, 38, 0.08);
+  box-shadow: 0 0 0 1.5px rgba(var(--flag-rgb), 0.55), 0 0 14px rgba(var(--flag-rgb), 0.08);
 }
 /* Ensure card content sits above the pattern layer */
 .card > * {
@@ -137,7 +266,7 @@ select option:hover {
 
 /* Dropdown shadow */
 .pop {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 0 rgba(255, 255, 255, 0.04) inset;
+  box-shadow: var(--shadow-pop);
 }
 
 /* Diagonal lines background pattern — center only, fades to edges */
@@ -148,8 +277,8 @@ select option:hover {
   z-index: 0;
   background-image: repeating-linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.028) 0px,
-    rgba(255, 255, 255, 0.028) 1px,
+    rgba(var(--pattern-rgb), 0.028) 0px,
+    rgba(var(--pattern-rgb), 0.028) 1px,
     transparent 1px,
     transparent 28px
   );

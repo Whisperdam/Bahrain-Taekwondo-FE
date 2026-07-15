@@ -43,7 +43,7 @@ export function Checkbox({
         className={cn(
           "mt-0.5 shrink-0 w-4 h-4 rounded border flex items-center justify-center transition-colors",
           checked
-            ? "bg-flag border-flag text-white"
+            ? "bg-flag border-flag text-accent-foreground"
             : "bg-ink-800 border-ink-500",
         )}
       >
