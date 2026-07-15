@@ -153,6 +153,14 @@ function UserDropdown({ user }: { user: UserProfile }) {
           )}
 
           <div className="h-px bg-ink-600/70 my-1" />
+          <div className="px-3.5 py-2 flex items-center justify-between gap-3">
+            <span className="text-[10px] uppercase tracking-[0.16em] text-slate-500">
+              {t.tweakTheme}
+            </span>
+            <ThemeToggle />
+          </div>
+
+          <div className="h-px bg-ink-600/70 my-1" />
           <MenuItem icon={LogOut} label={t.logout} onClick={handleLogout} danger />
         </div>
       )}
@@ -335,8 +343,7 @@ export function TopNav({ user }: { user: UserProfile }) {
 
         {/* Right */}
         <div className="flex items-center gap-2 sm:gap-3 ltr:ml-auto rtl:mr-auto lg:ml-0 lg:mr-0">
-          <div className="hidden sm:flex items-center gap-2">
-            <ThemeToggle />
+          <div className="hidden sm:block">
             <LanguageToggle />
           </div>
           <div className="hidden lg:block">

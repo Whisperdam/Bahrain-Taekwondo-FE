@@ -82,6 +82,8 @@ export async function listAcademies(
 export interface ListRankingsParams {
   season?: string;
   q?: string;
+  /** MALE or FEMALE — male/female divisions rank separately (each has its own #1). */
+  gender?: "MALE" | "FEMALE";
   sort?: string;
   page?: number;
   size?: number;
@@ -93,6 +95,7 @@ export async function listRankings(
   const p = new URLSearchParams();
   if (params.season) p.set("season", params.season);
   if (params.q) p.set("q", params.q);
+  if (params.gender) p.set("gender", params.gender);
   if (params.sort) p.set("sort", params.sort);
   if (params.page != null) p.set("page", String(params.page));
   if (params.size != null) p.set("size", String(params.size));

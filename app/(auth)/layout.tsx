@@ -2,9 +2,11 @@
 
 import { Toaster } from "sonner";
 import { useLangStore } from "@/lib/i18n/store";
+import { useThemeStore } from "@/lib/theme/store";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const { lang } = useLangStore();
+  const { theme } = useThemeStore();
 
   return (
     <div
@@ -14,12 +16,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="pattern-bg" aria-hidden="true" />
       <div className="w-full sm:max-w-md relative z-10">{children}</div>
       <Toaster
-        theme="dark"
+        theme={theme === "light" ? "light" : "dark"}
         toastOptions={{
           style: {
-            background: "#132743",
-            border: "1px solid #1E3A5F",
-            color: "#fff",
+            background: "var(--ink-700)",
+            border: "1px solid var(--ink-600)",
+            color: "var(--fg-primary)",
           },
         }}
       />

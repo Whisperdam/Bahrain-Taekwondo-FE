@@ -36,6 +36,7 @@ export default function RankingsBrowsePage() {
 
   const [season, setSeason] = useState(DEFAULT_SEASON);
   const [q, setQ] = useState("");
+  const [gender, setGender] = useState<"" | "MALE" | "FEMALE">("");
   const [sort, setSort] = useState<string>("rankPosition,asc");
   const [page, setPage] = useState(0);
 
@@ -43,11 +44,12 @@ export default function RankingsBrowsePage() {
   const debouncedSeason = useDebouncedValue(season, 300);
 
   const listQ = useQuery({
-    queryKey: ["rankings", "browse", { season: debouncedSeason, q: debouncedQ, sort, page }],
+    queryKey: ["rankings", "browse", { season: debouncedSeason, q: debouncedQ, gender, sort, page }],
     queryFn: () =>
       listRankings({
         season: debouncedSeason || undefined,
         q: debouncedQ || undefined,
+        gender: gender || undefined,
         sort,
         page,
         size: PAGE_SIZE,
@@ -71,7 +73,7 @@ export default function RankingsBrowsePage() {
         />
 
         {/* Filters bar */}
-        <div className="bg-ink-700 border border-ink-600/70 rounded-xl p-4 mb-5 grid grid-cols-1 md:grid-cols-[1fr_140px_220px_auto] gap-3 items-end">
+        <div className="bg-ink-700 border border-ink-600/70 rounded-xl p-4 mb-5 grid grid-cols-1 md:grid-cols-[1fr_140px_150px_220px_auto] gap-3 items-end">
           <Field id="q" label={t.search}>
             <div className="relative">
               <span className="pointer-events-none absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 text-slate-400">
@@ -100,6 +102,20 @@ export default function RankingsBrowsePage() {
               placeholder={DEFAULT_SEASON}
             />
           </Field>
+          <Field id="gender" label={t.gender}>
+            <Select
+              id="gender"
+              value={gender}
+              onChange={(e) => {
+                setGender(e.target.value as "" | "MALE" | "FEMALE");
+                setPage(0);
+              }}
+            >
+              <option value="">{t.genderAll}</option>
+              <option value="MALE">{t.genderMALE}</option>
+              <option value="FEMALE">{t.genderFEMALE}</option>
+            </Select>
+          </Field>
           <Field id="sort" label={t.sortBy}>
             <Select
               id="sort"
@@ -121,9 +137,10 @@ export default function RankingsBrowsePage() {
             onClick={() => {
               setQ("");
               setSeason(DEFAULT_SEASON);
+              setGender("");
               setPage(0);
             }}
-            disabled={!q && season === DEFAULT_SEASON}
+            disabled={!q && !gender && season === DEFAULT_SEASON}
             className="text-sm text-slate-300 hover:text-flag px-3 py-2.5 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-slate-300 transition-colors"
           >
             {t.clearFilters}

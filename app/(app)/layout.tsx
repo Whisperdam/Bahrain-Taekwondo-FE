@@ -11,6 +11,7 @@ import { Toaster } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { useAuthStore } from "@/lib/auth/store";
 import { useLangStore } from "@/lib/i18n/store";
+import { useThemeStore } from "@/lib/theme/store";
 import { getMeApi } from "@/lib/auth/api";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -23,6 +24,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const { isAuthenticated, hydrated } = useAuth();
   const { lang } = useLangStore();
+  const { theme } = useThemeStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -42,12 +44,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="relative z-10">{children}</div>
       </div>
       <Toaster
-        theme="dark"
+        theme={theme === "light" ? "light" : "dark"}
         toastOptions={{
           style: {
-            background: "#132743",
-            border: "1px solid #1E3A5F",
-            color: "#fff",
+            background: "var(--ink-700)",
+            border: "1px solid var(--ink-600)",
+            color: "var(--fg-primary)",
           },
         }}
       />
