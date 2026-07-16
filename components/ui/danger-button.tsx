@@ -45,8 +45,17 @@ export function DangerButton({
       )}
       {...props}
     >
-      {loading && <Spinner />}
-      <span>{loading && loadingText ? loadingText : children}</span>
+      {/* children render directly (not wrapped in a span) — see the same
+          note in primary-button.tsx: keeps multi-element icon+text children
+          laid out by the button's flex row instead of wrapping. */}
+      {loading ? (
+        <>
+          <Spinner />
+          {loadingText && <span>{loadingText}</span>}
+        </>
+      ) : (
+        children
+      )}
     </button>
   );
 }

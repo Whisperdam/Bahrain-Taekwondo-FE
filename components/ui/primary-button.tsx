@@ -40,8 +40,18 @@ export function PrimaryButton({
       )}
       {...props}
     >
-      {loading && <Spinner />}
-      <span>{loading && loadingText ? loadingText : children}</span>
+      {/* children render directly (not wrapped in a span) so multi-element
+          children like `<span>Next</span><ChevronIcon/>` stay laid out by
+          the button's own flex row instead of collapsing into inline text
+          that can wrap the icon onto its own line. */}
+      {loading ? (
+        <>
+          <Spinner />
+          {loadingText && <span>{loadingText}</span>}
+        </>
+      ) : (
+        children
+      )}
     </button>
   );
 }

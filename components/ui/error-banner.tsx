@@ -33,7 +33,8 @@ export function ErrorBanner({ children }: ErrorBannerProps) {
       <span className="mt-0.5 shrink-0 text-red-400">
         <AlertIcon />
       </span>
-      <span className="flex-1">{children}</span>
+      {/* text-pretty avoids leaving a single orphaned word on the last line */}
+      <span className="flex-1 text-pretty">{children}</span>
     </div>
   );
 }
