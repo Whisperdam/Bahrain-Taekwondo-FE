@@ -131,6 +131,8 @@
 @theme inline {
   --font-sans: var(--font-inter);
   --font-arabic: var(--font-noto-sans-arabic);
+  /* Used only for the small WSPR footer credit — see components/dashboard/footer.tsx */
+  --font-archivo: var(--font-archivo);
 
   --color-ink-900: var(--ink-900);
   --color-ink-800: var(--ink-800);

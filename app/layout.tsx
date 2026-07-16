@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Inter, Noto_Sans_Arabic } from "next/font/google";
+import { Inter, Noto_Sans_Arabic, Archivo } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -11,6 +11,14 @@ const inter = Inter({
 const notoSansArabic = Noto_Sans_Arabic({
   variable: "--font-noto-sans-arabic",
   subsets: ["arabic"],
+});
+
+// Used only for the small "WSPR · BY NASAIF" footer credit — see
+// components/dashboard/footer.tsx and the wspr-brand skill.
+const archivo = Archivo({
+  variable: "--font-archivo",
+  weight: ["300", "500"],
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -26,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${notoSansArabic.variable} h-full antialiased`}
+      className={`${inter.variable} ${notoSansArabic.variable} ${archivo.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* Runs before any React/Tailwind paint so a saved non-default theme

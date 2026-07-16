@@ -62,9 +62,27 @@ export function Footer({ lang }: { lang: DashLang }) {
       </div>
 
       <div className="border-t border-ink-600/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-xs text-slate-500 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-xs text-slate-500 flex flex-wrap justify-between items-center gap-x-4 gap-y-2">
           <span>© 2026 {DASH_STRINGS.en.fedFull}. {t.rights}</span>
-          <span className="font-arabic" dir="rtl">© ٢٠٢٦</span>
+          <div className="flex items-center gap-4">
+            <span className="font-arabic" dir="rtl">© ٢٠٢٦</span>
+            {/* Small, muted studio credit — WSPR brand identity, recolored
+                to the site's own muted-text token so it stays quiet across
+                all three themes instead of importing WSPR's own palette. */}
+            <span
+              className="font-archivo inline-flex items-center gap-1 text-slate-600 select-none"
+              style={{ direction: "ltr" }}
+              title="Built by WSPR — by Nasaif"
+            >
+              <span className="text-[10px] font-medium uppercase tracking-[0.34em]">
+                WSPR
+              </span>
+              <span className="text-[10px] opacity-50">·</span>
+              <span className="text-[8px] font-light uppercase tracking-[0.3em] opacity-[.62]">
+                by Nasaif
+              </span>
+            </span>
+          </div>
         </div>
       </div>
     </footer>
