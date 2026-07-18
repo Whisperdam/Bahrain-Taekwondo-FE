@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -171,7 +172,10 @@ export default function AcademiesBrowsePage() {
 
 function AcademyRow({ row, lang }: { row: AcademyDTO; lang: "en" | "ar" }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[2fr_1.6fr_1.8fr_1.2fr] gap-1.5 md:gap-3 md:items-center px-5 py-3.5 text-sm border-t border-ink-600/60 first:border-0 hover:bg-ink-600/30 transition-colors">
+    <Link
+      href={`/academies/${row.academyId}`}
+      className="grid grid-cols-1 md:grid-cols-[2fr_1.6fr_1.8fr_1.2fr] gap-1.5 md:gap-3 md:items-center px-5 py-3.5 text-sm border-t border-ink-600/60 first:border-0 hover:bg-ink-600/30 transition-colors"
+    >
       <div className="text-white font-medium">{row.academyName}</div>
       <div className="text-slate-300 text-xs truncate">{row.location || "—"}</div>
       <div className="min-w-0">
@@ -196,7 +200,7 @@ function AcademyRow({ row, lang }: { row: AcademyDTO; lang: "en" | "ar" }) {
       <div className="text-slate-400 text-xs tabular-nums">
         {row.establishedDate ? format(new Date(row.establishedDate), "PP") : "—"}
       </div>
-    </div>
+    </Link>
   );
 }
 

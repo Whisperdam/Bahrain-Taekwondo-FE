@@ -59,6 +59,7 @@ export interface AcademyRequest {
   phone?: string;
   email?: string;
   establishedDate?: string;
+  description?: string;
   owningCoachId?: number;
   status?: AcademyStatus;
 }

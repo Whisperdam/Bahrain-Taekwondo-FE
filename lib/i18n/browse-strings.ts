@@ -53,6 +53,26 @@ export const BROWSE_STRINGS = {
     sortEstablishedAsc: "Established — oldest first",
     academiesEmpty: "No academies match these filters.",
 
+    // ── Academy details page
+    backToAcademies: "Academies",
+    aboutAcademy: "About",
+    contactInfo: "Contact",
+    adPhone: "Phone",
+    adEmail: "Email",
+    adLocation: "Location",
+    adEstablished: "Established",
+    registeredPlayers: "Registered players",
+    playersCount: (n: number) => `${n} ${n === 1 ? "player" : "players"}`,
+    colBelt: "Belt",
+    colGender: "Gender",
+    genderMALEShort: "Male",
+    genderFEMALEShort: "Female",
+    noDescription: "This academy hasn't added a description yet.",
+    noPlayers: "No registered players yet.",
+    academyNotFound: "Academy not found",
+    academyNotFoundBody:
+      "This academy doesn't exist or is no longer available.",
+
     // ── Rankings
     rankingsTitle: "National Rankings",
     rankingsSub: "Season standings across all divisions.",
@@ -120,6 +140,25 @@ export const BROWSE_STRINGS = {
     sortEstablishedDesc: "التأسيس — الأحدث أولاً",
     sortEstablishedAsc: "التأسيس — الأقدم أولاً",
     academiesEmpty: "لا توجد أكاديميات مطابقة لهذه الفلاتر.",
+
+    // ── Academy details page
+    backToAcademies: "الأكاديميات",
+    aboutAcademy: "نبذة",
+    contactInfo: "التواصل",
+    adPhone: "الهاتف",
+    adEmail: "البريد الإلكتروني",
+    adLocation: "الموقع",
+    adEstablished: "تاريخ التأسيس",
+    registeredPlayers: "اللاعبون المسجّلون",
+    playersCount: (n: number) => `${n} ${n === 1 ? "لاعب" : "لاعبين"}`,
+    colBelt: "الحزام",
+    colGender: "الجنس",
+    genderMALEShort: "ذكر",
+    genderFEMALEShort: "أنثى",
+    noDescription: "لم تضف هذه الأكاديمية نبذة بعد.",
+    noPlayers: "لا يوجد لاعبون مسجّلون بعد.",
+    academyNotFound: "الأكاديمية غير موجودة",
+    academyNotFoundBody: "هذه الأكاديمية غير موجودة أو لم تعد متاحة.",
 
     rankingsTitle: "التصنيف الوطني",
     rankingsSub: "ترتيب الموسم عبر جميع الفئات.",

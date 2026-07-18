@@ -3,6 +3,7 @@ import type {
   TournamentDTO,
   NationalRankingDTO,
   AcademyDTO,
+  AcademyPlayerDTO,
   PageResponse,
 } from "@/types/dashboard";
 
@@ -75,6 +76,22 @@ export async function listAcademies(
   if (params.size != null) p.set("size", String(params.size));
   const res = await apiClient.get<PageResponse<AcademyDTO>>(
     `/api/academies?${p}`,
+  );
+  return res.data;
+}
+
+// ── Academy details page ────────────────────────────────────────────────────
+
+export async function fetchAcademy(id: number): Promise<AcademyDTO> {
+  const res = await apiClient.get<AcademyDTO>(`/api/academies/${id}`);
+  return res.data;
+}
+
+export async function fetchAcademyPlayers(
+  id: number,
+): Promise<AcademyPlayerDTO[]> {
+  const res = await apiClient.get<AcademyPlayerDTO[]>(
+    `/api/academies/${id}/players`,
   );
   return res.data;
 }

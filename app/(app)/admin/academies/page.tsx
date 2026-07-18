@@ -20,6 +20,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -352,6 +353,7 @@ interface FormState {
   phone: string;
   email: string;
   establishedDate: string;
+  description: string;
 }
 
 function AcademyFormModal({
@@ -373,6 +375,7 @@ function AcademyFormModal({
     phone: editing?.phone ?? "",
     email: editing?.email ?? "",
     establishedDate: editing?.establishedDate ?? "",
+    description: editing?.description ?? "",
   }));
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -389,6 +392,7 @@ function AcademyFormModal({
         phone: form.phone.trim() || undefined,
         email: form.email.trim() || undefined,
         establishedDate: form.establishedDate || undefined,
+        description: form.description.trim() || undefined,
         // Ownership is assigned via the academy-application approval flow;
         // this admin form deliberately doesn't touch it.
       };
@@ -485,6 +489,16 @@ function AcademyFormModal({
           type="date"
           value={form.establishedDate}
           onChange={(e) => set("establishedDate", e.target.value)}
+        />
+      </Field>
+
+      <Field id="ad" label={t.aDescription}>
+        <Textarea
+          id="ad"
+          rows={4}
+          value={form.description}
+          onChange={(e) => set("description", e.target.value)}
+          placeholder={t.aDescriptionPh}
         />
       </Field>
     </Modal>

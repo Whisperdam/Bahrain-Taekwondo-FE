@@ -38,9 +38,21 @@ export interface AcademyDTO {
   phone?: string | null;
   email?: string | null;
   establishedDate?: string | null;
+  description?: string | null;
   status?: "ACTIVE" | "INACTIVE";
   owningCoachId?: number | null;
   owningCoachName?: string | null;
+}
+
+/** Public-safe roster row from GET /api/academies/{id}/players. */
+export interface AcademyPlayerDTO {
+  playerId: number;
+  firstName: string;
+  lastName: string;
+  gender: "MALE" | "FEMALE";
+  beltName: string | null;
+  beltColor: string | null;
+  rankingPoints: number | null;
 }
 
 export interface PageResponse<T> {

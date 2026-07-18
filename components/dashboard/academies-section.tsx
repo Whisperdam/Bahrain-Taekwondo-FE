@@ -6,7 +6,10 @@ import type { AcademyDTO } from "@/types/dashboard";
 
 function AcademyCard({ academy }: { academy: AcademyDTO }) {
   return (
-    <div className="card bg-ink-700 border border-ink-600/70 rounded-xl p-5 flex items-start gap-3.5">
+    <Link
+      href={`/academies/${academy.academyId}`}
+      className="card bg-ink-700 border border-ink-600/70 rounded-xl p-5 flex items-start gap-3.5"
+    >
       <span className="shrink-0 w-9 h-9 rounded-lg bg-ink-800 border border-ink-600 text-flag flex items-center justify-center">
         <MapPin size={16} />
       </span>
@@ -14,7 +17,7 @@ function AcademyCard({ academy }: { academy: AcademyDTO }) {
         <div className="text-sm font-semibold text-white truncate">{academy.academyName}</div>
         <div className="text-xs text-slate-400 mt-0.5">{academy.location}</div>
       </div>
-    </div>
+    </Link>
   );
 }
 
