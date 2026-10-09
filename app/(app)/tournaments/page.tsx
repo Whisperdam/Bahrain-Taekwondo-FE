@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -14,6 +15,10 @@ import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { ErrorState } from "@/components/ui/error-state";
+import {
+  TournamentStatusBadge,
+  TournamentTypeBadge,
+} from "@/components/tournaments/tournament-badges";
 import { useAuth } from "@/hooks/use-auth";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useLangStore } from "@/lib/i18n/store";
@@ -24,19 +29,6 @@ import type { TournamentDTO } from "@/types/dashboard";
 const PAGE_SIZE = 10;
 
 type StatusTab = "" | "UPCOMING" | "ONGOING" | "COMPLETED" | "CANCELLED";
-
-const STATUS_STYLES: Record<string, string> = {
-  UPCOMING: "bg-sky-500/10 text-sky-300 border-sky-500/30",
-  ONGOING: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
-  COMPLETED: "bg-slate-500/10 text-slate-300 border-slate-500/30",
-  CANCELLED: "bg-red-500/10 text-red-300 border-red-500/30",
-};
-
-const TYPE_STYLES: Record<string, string> = {
-  NATIONAL: "bg-flag/15 text-flag border-flag/40",
-  INTERNATIONAL: "bg-amber-500/10 text-amber-300 border-amber-500/40",
-  REGIONAL: "bg-sky-500/10 text-sky-300 border-sky-500/40",
-};
 
 const SORTS = [
   { value: "startDate,asc", labelKey: "sortStartAsc" },
@@ -230,27 +222,28 @@ function TournamentRow({
 }) {
   const dates = `${format(new Date(row.startDate), "PP")} – ${format(new Date(row.endDate), "PP")}`;
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[2.2fr_1fr_1.6fr_1.4fr_110px] gap-1.5 md:gap-3 md:items-center px-5 py-3.5 text-sm border-t border-ink-600/60 first:border-0 hover:bg-ink-600/30 transition-colors">
+    <Link
+      href={`/tournaments/${row.tournamentId}`}
+      className="grid grid-cols-1 md:grid-cols-[2.2fr_1fr_1.6fr_1.4fr_110px] gap-1.5 md:gap-3 md:items-center px-5 py-3.5 text-sm border-t border-ink-600/60 first:border-0 hover:bg-ink-600/30 transition-colors"
+    >
       <div className="text-white font-medium">{row.tournamentName}</div>
       <div>
         {row.tournamentType && (
-          <span
-            className={`inline-flex items-center text-[10px] uppercase tracking-[0.14em] font-medium border rounded px-1.5 py-0.5 ${TYPE_STYLES[row.tournamentType] ?? TYPE_STYLES.NATIONAL}`}
-          >
-            {t[`type${row.tournamentType}` as keyof typeof t] as string}
-          </span>
+          <TournamentTypeBadge
+            type={row.tournamentType}
+            label={t[`type${row.tournamentType}` as keyof typeof t] as string}
+          />
         )}
       </div>
       <div className="text-slate-300 text-xs truncate">{row.venue ?? "—"}</div>
       <div className="text-slate-400 text-xs tabular-nums">{dates}</div>
       <div>
-        <span
-          className={`inline-flex items-center text-[10px] uppercase tracking-[0.14em] font-medium border rounded px-1.5 py-0.5 ${STATUS_STYLES[row.status] ?? STATUS_STYLES.UPCOMING}`}
-        >
-          {(t[`status${row.status}` as keyof typeof t] as string) ?? row.status}
-        </span>
+        <TournamentStatusBadge
+          status={row.status}
+          label={(t[`status${row.status}` as keyof typeof t] as string) ?? row.status}
+        />
       </div>
-    </div>
+    </Link>
   );
 }
 

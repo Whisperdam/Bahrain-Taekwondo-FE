@@ -10,7 +10,16 @@ export interface TournamentDTO {
   maxParticipants?: number;
   status: string;
   bannerImageUrl?: string;
+  // Registration summary — present only on GET /api/tournaments/{id}
+  participantCount?: number;
+  registrationOpen?: boolean;
+  registrationClosedReason?: RegistrationClosedReason | null;
 }
+
+export type RegistrationClosedReason =
+  | "NOT_UPCOMING"
+  | "DEADLINE_PASSED"
+  | "FULL";
 
 export interface NationalRankingDTO {
   rankingId: number;

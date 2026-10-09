@@ -51,7 +51,10 @@ function TypeBadge({ type, lang }: { type: string; lang: DashLang }) {
 
 function TournamentCard({ tournament, lang }: { tournament: TournamentDTO; lang: DashLang }) {
   return (
-    <div className="card bg-ink-700 border border-ink-600/70 rounded-xl p-5 flex flex-col gap-3 h-full">
+    <Link
+      href={`/tournaments/${tournament.tournamentId}`}
+      className="card bg-ink-700 border border-ink-600/70 rounded-xl p-5 flex flex-col gap-3 h-full"
+    >
       <div className="flex items-start justify-between gap-3">
         <span className="text-flag"><Trophy size={20} /></span>
         <TypeBadge type={tournament.tournamentType} lang={lang} />
@@ -69,7 +72,7 @@ function TournamentCard({ tournament, lang }: { tournament: TournamentDTO; lang:
           <span className="truncate">{tournament.venue}</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
