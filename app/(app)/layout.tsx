@@ -7,6 +7,7 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import { Toaster } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { useAuthStore } from "@/lib/auth/store";
@@ -18,7 +19,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
-        defaultOptions: { queries: { staleTime: 60 * 1000, retry: 1 } },
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+            // Retry once, but never on 429: retrying a rate-limited request
+            // only adds to the load that caused the limit.
+            retry: (failureCount, error) =>
+              !(isAxiosError(error) && error.response?.status === 429) &&
+              failureCount < 1,
+          },
+        },
       }),
   );
 

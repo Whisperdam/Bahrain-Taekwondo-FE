@@ -1,4 +1,6 @@
 import axios from "axios";
+import { ERROR_STRINGS } from "@/lib/i18n/error-strings";
+import { useLangStore } from "@/lib/i18n/store";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
@@ -17,6 +19,18 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 429) {
+      // Rate limited. The server's message is English; replace it with one in
+      // the user's language so every page that shows `data.message` (login,
+      // forgot password, ...) reads correctly.
+      const raw = Number(error.response.data?.retryAfterSeconds);
+      const seconds = Number.isFinite(raw) && raw > 0 ? raw : null;
+      error.response.data = {
+        ...error.response.data,
+        message: ERROR_STRINGS[useLangStore.getState().lang].tooManyRequests(seconds),
+      };
+    }
+
     if (error.response?.status === 401 && typeof window !== "undefined") {
       // Don't redirect on auth endpoints — a 401 there is the legitimate
       // server response (bad credentials, invalid reset token, etc.) and the

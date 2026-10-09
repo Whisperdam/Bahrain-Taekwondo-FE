@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Award,
@@ -321,7 +322,7 @@ export function TopNav({ user }: { user: UserProfile }) {
     <header className="sticky top-0 z-30 bg-ink-800/80 backdrop-blur border-b border-ink-600/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
         {/* Left: logo — links to the dashboard */}
-        <a href="/dashboard" className="flex items-center gap-2.5 shrink-0 hover:opacity-90 transition-opacity">
+        <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0 hover:opacity-90 transition-opacity">
           <ShieldLogo size={32} />
           <div className="hidden sm:block leading-tight">
             <div className="text-sm font-semibold text-white">
@@ -333,7 +334,7 @@ export function TopNav({ user }: { user: UserProfile }) {
               {lang === "ar" ? "بوابة الأعضاء" : "Federation"}
             </div>
           </div>
-        </a>
+        </Link>
 
         {/* Center: reserved for future portal links */}
         <nav

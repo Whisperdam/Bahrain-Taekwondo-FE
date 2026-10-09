@@ -16,6 +16,15 @@ import {
   fetchAcademies,
 } from "@/lib/dashboard/api";
 
+// The three dashboard sections change slowly, so coming back to the dashboard
+// should show what is already loaded instead of fetching again. Kept fresh for
+// 5 minutes, kept in memory for 30, and not refetched when the tab regains focus.
+const SLOW_CHANGING = {
+  staleTime: 5 * 60 * 1000,
+  gcTime: 30 * 60 * 1000,
+  refetchOnWindowFocus: false,
+} as const;
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const { lang } = useLangStore();
@@ -23,16 +32,19 @@ export default function DashboardPage() {
   const { data: tournaments, isLoading: tourLoading } = useQuery({
     queryKey: ["tournaments", "upcoming"],
     queryFn: fetchUpcomingTournaments,
+    ...SLOW_CHANGING,
   });
 
   const { data: rankings, isLoading: rankLoading } = useQuery({
     queryKey: ["rankings", 2026],
     queryFn: () => fetchTopRankings(2026),
+    ...SLOW_CHANGING,
   });
 
   const { data: academies, isLoading: acadLoading } = useQuery({
     queryKey: ["academies"],
     queryFn: fetchAcademies,
+    ...SLOW_CHANGING,
   });
 
   if (!user) return null;
