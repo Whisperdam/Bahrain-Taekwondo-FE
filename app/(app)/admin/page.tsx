@@ -1,11 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Award, Medal, Building2, Users, Trophy, ArrowRight, ChevronRight } from "lucide-react";
+import { Award, Medal, Building2, Users, Trophy, ArrowRight, ChevronRight, UserCheck } from "lucide-react";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
+import { ReviewQueue, isReviewType } from "@/components/admin/review-queue";
 import { useAuth } from "@/hooks/use-auth";
 import { useLangStore } from "@/lib/i18n/store";
 import { ADMIN_STRINGS } from "@/lib/i18n/admin-strings";
@@ -13,6 +15,7 @@ import {
   listCoachQueue,
   listOfficialQueue,
   listAcademyQueue,
+  listReviewQueue,
   searchUsers,
 } from "@/lib/admin/api";
 
@@ -81,6 +84,18 @@ function QuickLink({
 }
 
 export default function AdminLandingPage() {
+  return (
+    <Suspense fallback={null}>
+      <Content />
+    </Suspense>
+  );
+}
+
+function Content() {
+  const params = useSearchParams();
+  const typeParam = params.get("type")?.toUpperCase() ?? null;
+  const initialType = isReviewType(typeParam) ? typeParam : "ALL";
+
   const { user } = useAuth();
   const { lang } = useLangStore();
   const t = ADMIN_STRINGS[lang];
@@ -97,6 +112,11 @@ export default function AdminLandingPage() {
     queryKey: ["admin", "queue", "academy", "PENDING", 0],
     queryFn: () => listAcademyQueue({ status: "PENDING", page: 0, size: 1 }),
   });
+  const playerQ = useQuery({
+    queryKey: ["admin", "queue", "player", "PENDING", 0],
+    queryFn: () =>
+      listReviewQueue({ type: "PLAYER", status: "PENDING", page: 0, size: 1 }),
+  });
   const usersQ = useQuery({
     queryKey: ["admin", "users", "totalCount"],
     queryFn: () => searchUsers({ page: 0, size: 1 }),
@@ -112,7 +132,14 @@ export default function AdminLandingPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-6">
         <PageHeader title={t.adminTitle} subtitle={t.adminSub} />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <PendingCard
+            icon={UserCheck}
+            label={t.pendingPlayers}
+            count={valueOrDash(playerQ.data?.totalElements)}
+            href="/admin?type=PLAYER#review-queue"
+            cta={t.reviewQueue}
+          />
           <PendingCard
             icon={Award}
             label={t.pendingCoaches}
@@ -164,6 +191,8 @@ export default function AdminLandingPage() {
             />
           </div>
         </section>
+
+        <ReviewQueue key={initialType} initialType={initialType} />
       </main>
     </>
   );

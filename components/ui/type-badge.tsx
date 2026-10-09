@@ -1,17 +1,18 @@
-import { Award, Medal, Building2 } from "lucide-react";
-import type { ApplicationType } from "@/types/applications";
+import { Award, Medal, Building2, Users } from "lucide-react";
+import type { ReviewType } from "@/types/admin";
 
-const ICONS: Record<ApplicationType, React.ComponentType<{ size?: number }>> = {
+const ICONS: Record<ReviewType, React.ComponentType<{ size?: number }>> = {
   COACH: Award,
   OFFICIAL: Medal,
   ACADEMY: Building2,
+  PLAYER: Users,
 };
 
 export function TypeBadge({
   type,
   label,
 }: {
-  type: ApplicationType;
+  type: ReviewType;
   label: string;
 }) {
   const Icon = ICONS[type];

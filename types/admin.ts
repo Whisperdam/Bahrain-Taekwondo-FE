@@ -1,5 +1,7 @@
 // Mirrors backend DTOs in dto/admin/*
 
+import type { ApplicationStatus, DocumentSummary, Gender } from "./applications";
+
 export type UserStatus = "PENDING" | "ACTIVE" | "SUSPENDED";
 
 export type AppRole =
@@ -62,4 +64,57 @@ export interface AcademyRequest {
   description?: string;
   owningCoachId?: number;
   status?: AcademyStatus;
+}
+
+// ── Review queue ────────────────────────────────────────────────────────────
+// GET /api/admin/review-queue — coach / official / academy applications and
+// players awaiting black-belt verification in one list.
+
+export type ReviewType = "COACH" | "OFFICIAL" | "ACADEMY" | "PLAYER";
+
+export interface ReviewQueueItem {
+  type: ReviewType;
+  /** applicationId for the three application types, playerId for PLAYER. */
+  id: number;
+  /** Person's name, or the proposed academy name for ACADEMY. */
+  subject: string;
+  /**
+   * Certification level (COACH), specialization (OFFICIAL), applying coach
+   * (ACADEMY) or "academy · belt" (PLAYER). Raw, may be null.
+   */
+  detail: string | null;
+  email: string | null;
+  status: ApplicationStatus;
+  submittedAt: string | null;
+  reviewedAt: string | null;
+}
+
+/** GET /api/admin/players/{id} — what an admin needs to verify a belt certificate. */
+export interface PlayerReviewDetail {
+  playerId: number;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string | null;
+  gender: Gender | null;
+  nationality: string | null;
+  cprNumber: string | null;
+  phone: string | null;
+  email: string | null;
+  academyId: number | null;
+  academyName: string | null;
+  beltName: string | null;
+  beltColor: string | null;
+  registrationDate: string | null;
+  playerStatus: string;
+  /** PENDING, APPROVED, REJECTED — or the raw status for players who never needed review. */
+  reviewStatus: string;
+  addedBy: string | null;
+  submittedAt: string | null;
+  reviewedBy: number | null;
+  reviewedAt: string | null;
+  rejectionReason: string | null;
+  userId: number | null;
+  username: string | null;
+  userEmail: string | null;
+  documents: DocumentSummary[];
 }

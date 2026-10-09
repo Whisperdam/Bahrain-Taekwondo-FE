@@ -10,6 +10,9 @@ import type {
   TournamentStatus,
   AcademyRequest,
   AcademyStatus,
+  ReviewQueueItem,
+  ReviewType,
+  PlayerReviewDetail,
 } from "@/types/admin";
 import type {
   ApplicationStatus,
@@ -125,6 +128,46 @@ export async function rejectApplication<T extends ApplicationType>(
     body,
   );
   return res.data;
+}
+
+// ── Review queue (all application types + player verifications) ────────────
+export interface ReviewQueueParams {
+  type?: ReviewType | "ALL";
+  status?: ApplicationStatus | "ALL";
+  sort?: "newest" | "oldest";
+  page?: number;
+  size?: number;
+}
+
+export async function listReviewQueue(
+  params: ReviewQueueParams = {},
+): Promise<PageResponse<ReviewQueueItem>> {
+  const res = await apiClient.get<PageResponse<ReviewQueueItem>>(
+    "/api/admin/review-queue",
+    { params },
+  );
+  return res.data;
+}
+
+// ── Player verification (black belt certificate review) ────────────────────
+export async function getPlayerReviewDetail(
+  id: number,
+): Promise<PlayerReviewDetail> {
+  const res = await apiClient.get<PlayerReviewDetail>(
+    `/api/admin/players/${id}`,
+  );
+  return res.data;
+}
+
+export async function approvePlayer(id: number): Promise<void> {
+  await apiClient.put(`/api/admin/players/${id}/approve`);
+}
+
+export async function rejectPlayer(
+  id: number,
+  body: RejectRequest,
+): Promise<void> {
+  await apiClient.put(`/api/admin/players/${id}/reject`, body);
 }
 
 // ── Users ───────────────────────────────────────────────────────────────────

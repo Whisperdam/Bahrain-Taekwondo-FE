@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { Check, FileIcon, ExternalLink, AlertTriangle } from "lucide-react";
+import { Check, AlertTriangle } from "lucide-react";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { TypeBadge } from "@/components/ui/type-badge";
 import { Avatar } from "@/components/ui/avatar";
+import { InfoRow } from "@/components/admin/info-row";
+import { DocumentsCard } from "@/components/admin/documents-card";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { SecondaryButton } from "@/components/ui/secondary-button";
@@ -29,13 +31,11 @@ import {
   approveApplication,
   rejectApplication,
 } from "@/lib/admin/api";
-import { getDocumentUrl } from "@/lib/applications/api";
 import type {
   ApplicationType,
   CoachApplicationDetail,
   OfficialApplicationDetail,
   AcademyApplicationDetail,
-  DocumentSummary,
 } from "@/types/applications";
 
 type DetailUnion =
@@ -162,7 +162,7 @@ export default function AdminApplicationDetailPage({
 
               <div className="space-y-5">
                 <ApplicationFieldsCard app={app} type={type} t={t} lang={lang} />
-                <DocumentsCard documents={app.documents ?? []} t={t} lang={lang} />
+                <DocumentsCard documents={app.documents ?? []} t={t} />
               </div>
             </div>
 
@@ -547,88 +547,5 @@ function AcademyFields({
       </InfoRow>
       <InfoRow label={t.notes}>{app.notes}</InfoRow>
     </>
-  );
-}
-
-function DocumentsCard({
-  documents,
-  t,
-  lang,
-}: {
-  documents: DocumentSummary[];
-  t: (typeof ADMIN_STRINGS)[keyof typeof ADMIN_STRINGS];
-  lang: "en" | "ar";
-}) {
-  void lang;
-  return (
-    <section className="bg-ink-700 border border-ink-600/70 rounded-xl p-6">
-      <SectionHeader title={t.documents} />
-      {documents.length === 0 ? (
-        <div className="text-sm text-slate-500 italic">—</div>
-      ) : (
-        <div className="space-y-2.5">
-          {documents.map((d) => (
-            <div
-              key={d.documentId}
-              className="flex items-center gap-3 p-3.5 bg-ink-800/40 border border-ink-600/70 rounded-lg"
-            >
-              <span className="w-10 h-10 rounded-md bg-flag/10 border border-flag/30 text-flag flex items-center justify-center shrink-0">
-                <FileIcon size={18} />
-              </span>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm text-white font-medium truncate">
-                  {d.fileName}
-                </div>
-                <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-2 flex-wrap">
-                  <span>{d.documentType}</span>
-                  <span className="text-slate-600">·</span>
-                  <span className="tabular-nums">
-                    {(d.fileSizeBytes / 1024).toFixed(0)} KB
-                  </span>
-                  <span className="text-slate-600">·</span>
-                  <span>{format(new Date(d.uploadedAt), "PP")}</span>
-                </div>
-              </div>
-              <SecondaryButton
-                className="shrink-0 !py-2 !px-3 text-xs"
-                onClick={async () => {
-                  try {
-                    // Fetch the presigned URL via the auth-aware api client, then open it in a new tab.
-                    const { url } = await getDocumentUrl(d.documentId);
-                    if (url) window.open(url, "_blank", "noopener,noreferrer");
-                  } catch {
-                    toast.error(t.toastAppActionFailed);
-                  }
-                }}
-              >
-                <ExternalLink size={14} />
-                {t.preview}
-              </SecondaryButton>
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
-
-function InfoRow({
-  label,
-  children,
-}: {
-  label: string;
-  children?: React.ReactNode;
-}) {
-  const hasContent =
-    children != null && children !== "" && children !== undefined;
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-1 sm:gap-4 py-2.5 border-b border-ink-600/40 last:border-0">
-      <div className="text-[11px] uppercase tracking-[0.14em] text-slate-500">
-        {label}
-      </div>
-      <div className="text-sm text-slate-100">
-        {hasContent ? children : <span className="text-slate-500 italic">—</span>}
-      </div>
-    </div>
   );
 }
