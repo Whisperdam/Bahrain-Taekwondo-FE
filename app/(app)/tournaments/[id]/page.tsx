@@ -13,6 +13,7 @@ import {
   Clock,
   Lock,
   MapPin,
+  Medal,
   Plus,
   Trophy,
   UserMinus,
@@ -397,6 +398,15 @@ function SummaryCard({
           {tournament.registrationDeadline &&
             formatDate(tournament.registrationDeadline)}
         </InfoRow>
+        {tournament.status === "COMPLETED" && (
+          <InfoRow icon={Medal} label={t.rankingPoints}>
+            {tournament.pointsFinalizedAt
+              ? t.pointsPublished
+              : tournament.pointsPublishAt
+                ? t.pointsPending(formatDate(tournament.pointsPublishAt))
+                : null}
+          </InfoRow>
+        )}
         <InfoRow icon={Users} label={t.capacity}>
           <div>{max ? t.capacityOf(taken, max) : t.capacityOpen(taken)}</div>
           {max ? (

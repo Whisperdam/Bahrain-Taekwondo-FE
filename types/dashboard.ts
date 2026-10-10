@@ -14,6 +14,10 @@ export interface TournamentDTO {
   participantCount?: number;
   registrationOpen?: boolean;
   registrationClosedReason?: RegistrationClosedReason | null;
+  /** Results can be corrected until this moment; ranking points are published then. */
+  pointsPublishAt?: string | null;
+  /** When the ranking points were published; null until then. */
+  pointsFinalizedAt?: string | null;
 }
 
 export type RegistrationClosedReason =

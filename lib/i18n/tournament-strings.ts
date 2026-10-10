@@ -18,6 +18,9 @@ export const TOURNAMENT_STRINGS = {
     capacity: "Capacity",
     capacityOf: (taken: number, max: number) => `${taken} of ${max} places taken`,
     capacityOpen: (taken: number) => `${taken} registered · no limit`,
+    rankingPoints: "Ranking points",
+    pointsPending: (date: string) => `Published on ${date}. Results can be corrected until then.`,
+    pointsPublished: "Published",
     about: "About this tournament",
     noDescription: "No description has been added yet.",
 
@@ -88,6 +91,9 @@ export const TOURNAMENT_STRINGS = {
     capacity: "السعة",
     capacityOf: (taken: number, max: number) => `${taken} من ${max} مقعدًا محجوزًا`,
     capacityOpen: (taken: number) => `${taken} مسجّل · بلا حد أقصى`,
+    rankingPoints: "نقاط التصنيف",
+    pointsPending: (date: string) => `تُنشر في ${date}. يمكن تصحيح النتائج حتى ذلك الحين.`,
+    pointsPublished: "تم النشر",
     about: "عن البطولة",
     noDescription: "لم تتم إضافة وصف بعد.",
 
