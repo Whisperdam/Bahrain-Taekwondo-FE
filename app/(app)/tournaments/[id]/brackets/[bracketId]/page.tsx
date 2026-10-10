@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -18,6 +18,7 @@ import { LiveStrip, Podium } from "@/components/brackets/bracket-extras";
 import { MatchDialog } from "@/components/brackets/match-dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { useMyPlayer } from "@/hooks/use-my-player";
+import { useNow } from "@/hooks/use-now";
 import { useLangStore } from "@/lib/i18n/store";
 import { BRACKET_STRINGS } from "@/lib/i18n/bracket-strings";
 import { getMyAcademies } from "@/lib/coach/api";
@@ -25,16 +26,6 @@ import { getApiErrorMessage } from "@/lib/api/errors";
 import { fetchBracket, swapSlots } from "@/lib/brackets/api";
 
 const POLL_MS = 8000;
-
-/** Re-renders on an interval so "updated 12s ago" keeps counting. */
-function useNow(intervalMs: number) {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), intervalMs);
-    return () => clearInterval(id);
-  }, [intervalMs]);
-  return now;
-}
 
 export default function BracketPage({
   params,

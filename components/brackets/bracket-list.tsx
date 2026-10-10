@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Settings2, Swords, Trophy } from "lucide-react";
+import { ArrowRight, ListChecks, Settings2, Swords, Trophy } from "lucide-react";
 import { SectionHeader } from "@/components/ui/section-header";
 import type { BracketStrings } from "@/lib/i18n/bracket-strings";
 import type { BracketSummary } from "@/types/bracket";
@@ -20,15 +20,26 @@ export function BracketList({ tournamentId, brackets, isAdmin, t }: BracketListP
       <SectionHeader
         title={t.brackets}
         action={
-          isAdmin ? (
-            <Link
-              href={`/admin/tournaments/${tournamentId}/brackets`}
-              className="text-xs text-flag hover:text-flag-hover font-medium inline-flex items-center gap-1.5 transition-colors"
-            >
-              <Settings2 size={13} />
-              {t.manageBrackets}
-            </Link>
-          ) : undefined
+          <div className="flex items-center gap-4">
+            {brackets.some((b) => b.status === "PUBLISHED") && (
+              <Link
+                href={`/tournaments/${tournamentId}/matches`}
+                className="min-h-[32px] text-xs text-flag hover:text-flag-hover font-medium inline-flex items-center gap-1.5 transition-colors"
+              >
+                <ListChecks size={14} />
+                {t.allMatches}
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                href={`/admin/tournaments/${tournamentId}/brackets`}
+                className="min-h-[32px] text-xs text-flag hover:text-flag-hover font-medium inline-flex items-center gap-1.5 transition-colors"
+              >
+                <Settings2 size={13} />
+                {t.manageBrackets}
+              </Link>
+            )}
+          </div>
         }
       />
 

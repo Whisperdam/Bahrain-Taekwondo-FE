@@ -1,17 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Award,
   Briefcase,
+  Building2,
   ChevronDown,
   FileText,
+  LayoutDashboard,
+  ListOrdered,
   LogOut,
   Medal,
   Menu,
   Shield,
+  Trophy,
   User,
   X,
 } from "lucide-react";
@@ -22,6 +27,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { useLangStore } from "@/lib/i18n/store";
 import { useAuthStore } from "@/lib/auth/store";
 import { DASH_STRINGS } from "@/lib/i18n/dashboard-strings";
+import { BROWSE_STRINGS } from "@/lib/i18n/browse-strings";
 import type { UserProfile } from "@/types/auth";
 
 function getInitials(user: UserProfile): string {
@@ -214,6 +220,7 @@ function MobileSheet({
   const router = useRouter();
   const { logout } = useAuthStore();
   const t = DASH_STRINGS[lang];
+  const b = BROWSE_STRINGS[lang];
   const isAr = lang === "ar";
   const initials = getInitials(user);
 
@@ -227,9 +234,33 @@ function MobileSheet({
     router.replace("/login");
   }
 
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
+  // While the sheet is open the page behind it must not scroll, and Escape closes it.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose]);
+
+  if (!open || typeof document === "undefined") return null;
+
+  // Rendered in a portal on <body>. Inside the header it would be laid out
+  // relative to the header itself (its backdrop blur makes it the containing
+  // block for fixed children), squashing the "full-screen" sheet into 64px.
+  return createPortal(
+    <div
+      dir={isAr ? "rtl" : "ltr"}
+      className={`fixed inset-0 z-50 lg:hidden text-white ${isAr ? "font-arabic" : ""}`}
+      role="dialog"
+      aria-modal="true"
+    >
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div
         className={`absolute top-0 ltr:right-0 rtl:left-0 h-full w-[88%] max-w-sm bg-ink-800 border-l rtl:border-l-0 rtl:border-r border-ink-600 ${
@@ -270,6 +301,12 @@ function MobileSheet({
 
         {/* Nav items */}
         <nav className="flex-1 overflow-y-auto py-2">
+          <SheetItem icon={LayoutDashboard} label={b.backToDashboard} onClick={() => router.push("/dashboard")} onClose={onClose} />
+          <SheetItem icon={Trophy} label={b.tournamentsTitle} onClick={() => router.push("/tournaments")} onClose={onClose} />
+          <SheetItem icon={Building2} label={b.academiesTitle} onClick={() => router.push("/academies")} onClose={onClose} />
+          <SheetItem icon={ListOrdered} label={b.rankingsTitle} onClick={() => router.push("/rankings")} onClose={onClose} />
+
+          <div className="h-px bg-ink-600/70 my-2 mx-4" />
           <SheetItem icon={User} label={t.myProfile} onClick={() => router.push("/profile")} onClose={onClose} />
           <SheetItem icon={FileText} label={t.myApplications} onClick={() => router.push("/applications")} onClose={onClose} />
           {isCoach && (
@@ -308,7 +345,8 @@ function MobileSheet({
           <LanguageToggle />
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

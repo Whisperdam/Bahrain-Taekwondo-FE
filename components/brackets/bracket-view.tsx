@@ -1,5 +1,6 @@
 "use client";
 
+import { useId, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BracketStrings } from "@/lib/i18n/bracket-strings";
@@ -39,9 +40,15 @@ export function roundTitle(round: number, totalRounds: number, t: BracketStrings
  * The whole bracket, one column per round. Every round-N+1 cell is centred
  * between the two round-N cells that feed it, joined by connector lines, so it
  * reads like the familiar printed draw.
+ * <p>
+ * On a phone only a column or two fits, so a chip bar jumps straight to a round
+ * (or to the viewer's own match) and scrolling snaps to round boundaries.
  */
 export function BracketView({ bracket, t, viewer, onSelectMatch, swap }: BracketViewProps) {
   const totalRounds = bracket.summary.totalRounds;
+  const containerId = useId();
+  const [activeRound, setActiveRound] = useState(1);
+
   const rounds = Array.from({ length: totalRounds }, (_, i) => i + 1).map((round) => ({
     round,
     matches: bracket.matches
@@ -49,47 +56,119 @@ export function BracketView({ bracket, t, viewer, onSelectMatch, swap }: Bracket
       .sort((a, b) => a.matchIndex - b.matchIndex),
   }));
 
+  // The viewer's current match: their first unfinished one, else their latest.
+  const mine = bracket.matches
+    .filter((m) => !m.bye && viewer.playerId != null &&
+      (m.player1?.playerId === viewer.playerId || m.player2?.playerId === viewer.playerId))
+    .sort((a, b) => a.roundNumber - b.roundNumber);
+  const myMatch = mine.find((m) => m.status !== "COMPLETED") ?? mine[mine.length - 1] ?? null;
+
+  function jumpToRound(round: number) {
+    document
+      .getElementById(containerId)
+      ?.querySelector(`[data-round="${round}"]`)
+      ?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+  }
+
+  function jumpToMyMatch() {
+    if (!myMatch) return;
+    document
+      .getElementById(containerId)
+      ?.querySelector(`[data-match-id="${myMatch.matchId}"]`)
+      ?.scrollIntoView({ behavior: "smooth", inline: "center", block: "center" });
+  }
+
+  // Which round is nearest the middle of the viewport, to highlight its chip.
+  function onScroll(box: HTMLElement) {
+    const mid = box.getBoundingClientRect().left + box.clientWidth / 2;
+    let best = activeRound;
+    let bestDistance = Infinity;
+    box.querySelectorAll<HTMLElement>("[data-round]").forEach((col) => {
+      const r = col.getBoundingClientRect();
+      const distance = Math.abs(r.left + r.width / 2 - mid);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = Number(col.dataset.round);
+      }
+    });
+    if (best !== activeRound) setActiveRound(best);
+  }
+
   return (
-    <div className="overflow-x-auto pb-4">
-      <div className="flex min-w-max">
-        {rounds.map(({ round, matches }) => (
-          <div key={round} className="flex flex-col w-[248px] shrink-0">
-            <div className="text-[10px] uppercase tracking-[0.16em] font-medium text-slate-500 text-center mb-2 h-4">
-              {roundTitle(round, totalRounds, t)}
+    <div>
+      {(totalRounds > 1 || myMatch) && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-3 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {myMatch && (
+            <button
+              type="button"
+              onClick={jumpToMyMatch}
+              className="shrink-0 min-h-[36px] rounded-full border border-flag/60 bg-flag/10 px-3.5 text-xs font-semibold text-flag"
+            >
+              {t.myMatch}
+            </button>
+          )}
+          {totalRounds > 1 &&
+            rounds.map(({ round }) => (
+              <button
+                key={round}
+                type="button"
+                onClick={() => jumpToRound(round)}
+                aria-current={activeRound === round}
+                className={cn(
+                  "md:hidden shrink-0 min-h-[36px] rounded-full border px-3.5 text-xs font-medium whitespace-nowrap transition-colors",
+                  activeRound === round
+                    ? "border-white/70 bg-white/10 text-white"
+                    : "border-ink-600 text-slate-400",
+                )}
+              >
+                {roundTitle(round, totalRounds, t)}
+              </button>
+            ))}
+        </div>
+      )}
+
+      <div id={containerId} onScroll={(e) => onScroll(e.currentTarget)} className="overflow-x-auto pb-4 snap-x snap-proximity">
+        <div className="flex min-w-max">
+          {rounds.map(({ round, matches }) => (
+            <div key={round} data-round={round} className="flex flex-col w-[248px] shrink-0 snap-start">
+              <div className="text-[10px] uppercase tracking-[0.16em] font-medium text-slate-500 text-center mb-2 h-4">
+                {roundTitle(round, totalRounds, t)}
+              </div>
+              <div className="flex flex-col flex-1">
+                {matches.map((match) => (
+                  <div
+                    key={match.matchId}
+                    data-match-id={match.matchId}
+                    className="relative flex-1 flex items-center px-4 py-1.5"
+                  >
+                    {round > 1 && (
+                      <span className="absolute start-0 top-1/2 w-4 border-t border-ink-500" aria-hidden="true" />
+                    )}
+                    {round < totalRounds && (
+                      <>
+                        <span className="absolute end-0 top-1/2 w-4 border-t border-ink-500" aria-hidden="true" />
+                        <span
+                          className={cn(
+                            "absolute end-0 border-e border-ink-500",
+                            match.matchIndex % 2 === 0 ? "top-1/2 bottom-0" : "top-0 h-1/2",
+                          )}
+                          aria-hidden="true"
+                        />
+                      </>
+                    )}
+                    <MatchCard
+                      match={match}
+                      t={t}
+                      viewer={viewer}
+                      onSelect={onSelectMatch}
+                      swap={round === 1 ? swap : undefined}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-col flex-1">
-              {matches.map((match) => (
-                <div
-                  key={match.matchId}
-                  className="relative flex-1 flex items-center px-4 py-1.5"
-                >
-                  {round > 1 && (
-                    <span className="absolute start-0 top-1/2 w-4 border-t border-ink-500" aria-hidden="true" />
-                  )}
-                  {round < totalRounds && (
-                    <>
-                      <span className="absolute end-0 top-1/2 w-4 border-t border-ink-500" aria-hidden="true" />
-                      <span
-                        className={cn(
-                          "absolute end-0 border-e border-ink-500",
-                          match.matchIndex % 2 === 0 ? "top-1/2 bottom-0" : "top-0 h-1/2",
-                        )}
-                        aria-hidden="true"
-                      />
-                    </>
-                  )}
-                  <MatchCard
-                    match={match}
-                    t={t}
-                    viewer={viewer}
-                    onSelect={onSelectMatch}
-                    swap={round === 1 ? swap : undefined}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

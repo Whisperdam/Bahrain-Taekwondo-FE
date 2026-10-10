@@ -7,6 +7,7 @@ import type {
   BulkPlacementRequest,
   BulkPlacementResult,
   GenerateResult,
+  MatchListItem,
   MatchResultRequest,
   PlacementRequest,
   PublishAllResult,
@@ -31,6 +32,18 @@ export async function fetchBracket(
 ): Promise<Bracket> {
   const res = await apiClient.get<Bracket>(
     `/api/tournaments/${tournamentId}/brackets/${bracketId}`,
+  );
+  return res.data;
+}
+
+/** Every real match of the published brackets as one flat list, optionally for one weight class. */
+export async function fetchMatches(
+  tournamentId: number,
+  categoryId?: number,
+): Promise<MatchListItem[]> {
+  const res = await apiClient.get<MatchListItem[]>(
+    `/api/tournaments/${tournamentId}/matches`,
+    { params: categoryId ? { categoryId } : undefined },
   );
   return res.data;
 }

@@ -36,6 +36,16 @@ export interface BracketMatch {
   decidedAt: string | null;
 }
 
+/** A match in the tournament-wide list: the match plus the bracket it belongs to. */
+export interface MatchListItem extends BracketMatch {
+  bracketId: number;
+  categoryId: number;
+  categoryName: string;
+  categoryGender: "MALE" | "FEMALE" | "MIXED";
+  court: string | null;
+  totalRounds: number;
+}
+
 export interface BracketSummary {
   bracketId: number;
   tournamentId: number;
