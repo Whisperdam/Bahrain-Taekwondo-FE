@@ -1,9 +1,11 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { differenceInCalendarDays, format, parseISO } from "date-fns";
 import { CalendarDays, MapPin, Swords, Trophy } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { DASH_STRINGS } from "@/lib/i18n/dashboard-strings";
 import type { DashLang } from "@/lib/i18n/dashboard-strings";
 import { fetchLiveTournaments } from "@/lib/dashboard/api";
@@ -14,10 +16,17 @@ interface LiveEventsSectionProps {
   lang: DashLang;
 }
 
+/** How long each event stays on screen before the next one slides in. */
+const ROTATE_MS = 10_000;
+
 /**
- * The headline of the dashboard while something is happening: every tournament
- * that is being held right now. It renders nothing at all otherwise (while
- * loading, on error, or when no event is on), so the dashboard looks as usual.
+ * The headline of the dashboard while something is happening: the tournaments that
+ * are being held right now. It renders nothing at all otherwise (while loading, on
+ * error, or when no event is on), so the dashboard looks as usual.
+ * <p>
+ * One event is shown at a time. With several, dots at the bottom of the band switch
+ * between them, they can be swiped on a phone, and they rotate by themselves every
+ * ten seconds (paused while the pointer or keyboard focus is on the band).
  */
 export function LiveEventsSection({ lang }: LiveEventsSectionProps) {
   const t = DASH_STRINGS[lang];
@@ -31,22 +40,61 @@ export function LiveEventsSection({ lang }: LiveEventsSectionProps) {
   });
 
   const events = liveQ.data ?? [];
-  if (events.length === 0) return null;
+  const count = events.length;
+
+  const scroller = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const current = Math.min(active, Math.max(0, count - 1));
+
+  const goTo = useCallback((index: number) => {
+    const el = scroller.current;
+    if (!el) return;
+    const rtl = getComputedStyle(el).direction === "rtl"; // scrollLeft runs negative in right-to-left
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollTo({
+      left: (rtl ? -1 : 1) * index * el.clientWidth,
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  }, []);
+
+  // Which event is showing follows the scroll position, so swiping and the dots agree.
+  const onScroll = useCallback(() => {
+    const el = scroller.current;
+    if (!el || el.clientWidth === 0) return;
+    setActive(Math.round(Math.abs(el.scrollLeft) / el.clientWidth));
+  }, []);
+
+  // Next event every ten seconds. The timer starts over whenever the event changes,
+  // so choosing one by hand gives it a full ten seconds.
+  useEffect(() => {
+    if (count < 2 || paused) return;
+    const id = window.setInterval(() => {
+      if (!document.hidden) goTo((current + 1) % count);
+    }, ROTATE_MS);
+    return () => window.clearInterval(id);
+  }, [count, paused, current, goTo]);
+
+  if (count === 0) return null;
 
   return (
     // A full-width band, so it sits outside the page's centered column. The moving
-    // layers are decoration only; the cards on top of them stay still.
-    <section aria-labelledby="live-h" className="live-band">
+    // layers are decoration only.
+    <section
+      aria-labelledby="live-h"
+      className="live-band"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
       <div className="live-layer live-glow live-glow-a" aria-hidden="true" />
       <div className="live-layer live-glow live-glow-b" aria-hidden="true" />
       <div className="live-layer live-stripes" aria-hidden="true" />
-      <div className="live-layer live-ring" aria-hidden="true" />
-      <div className="live-layer live-ring live-ring-2" aria-hidden="true" />
-      <div className="live-layer live-ring live-ring-3" aria-hidden="true" />
 
-      {/* Equal padding above and below, so the card sits in the middle of the band. The
-          label is placed in the top padding rather than above the card. */}
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      {/* Equal room above and below the card, so it sits in the middle of the band. The
+          label takes up the top and the dots the bottom, both inside that room. */}
+      <div className="relative z-10 mx-auto max-w-7xl py-[4.5rem] sm:py-[5.5rem]">
         <h2
           id="live-h"
           className="absolute start-4 top-5 inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.22em] text-white sm:start-6 sm:top-6 sm:text-base lg:start-8"
@@ -57,11 +105,51 @@ export function LiveEventsSection({ lang }: LiveEventsSectionProps) {
           </span>
           {t.liveHeading}
         </h2>
-        <div className="flex flex-col gap-5">
-          {events.map((event) => (
-            <LiveEventCard key={event.tournamentId} event={event} lang={lang} />
+
+        {/* One event per screen-width slide; the browser snaps to each. */}
+        <div
+          ref={scroller}
+          onScroll={onScroll}
+          className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {events.map((event, i) => (
+            <div
+              key={event.tournamentId}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={t.liveEventOf(i + 1, count)}
+              inert={i !== current}
+              className="flex w-full shrink-0 snap-center items-center px-4 sm:px-6 lg:px-8"
+            >
+              <LiveEventCard event={event} lang={lang} />
+            </div>
           ))}
         </div>
+
+        {count > 1 && (
+          <div className="absolute inset-x-4 bottom-4 sm:inset-x-6 sm:bottom-5 lg:inset-x-8">
+            {/* centered under the card, which is at most 48rem wide */}
+            <div className="flex justify-center lg:max-w-3xl">
+              {events.map((event, i) => (
+                <button
+                  key={event.tournamentId}
+                  type="button"
+                  onClick={() => goTo(i)}
+                  aria-label={`${t.liveEventOf(i + 1, count)}: ${event.tournamentName}`}
+                  aria-current={i === current}
+                  className="group flex h-6 items-center px-1"
+                >
+                  <span
+                    className={cn(
+                      "h-2 rounded-full transition-all",
+                      i === current ? "w-6 bg-flag" : "w-2 bg-slate-400/60 group-hover:bg-slate-300",
+                    )}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

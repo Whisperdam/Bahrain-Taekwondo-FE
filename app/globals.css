@@ -57,7 +57,6 @@
   --live-to: #5a0c1c;
   --live-glow-a: rgba(230, 30, 55, 0.85);
   --live-glow-b: rgba(50, 110, 255, 0.6);
-  --live-ring: rgba(255, 255, 255, 0.42);
   --live-stripe: rgba(255, 255, 255, 0.09);
   --live-edge: rgba(206, 17, 38, 0.7);
 }
@@ -101,7 +100,6 @@
   --live-to: #2e2e32;
   --live-glow-a: rgba(255, 255, 255, 0.34);
   --live-glow-b: rgba(206, 17, 38, 0.6);
-  --live-ring: rgba(255, 255, 255, 0.5);
   --live-stripe: rgba(235, 45, 65, 0.17);
   --live-edge: rgba(228, 228, 231, 0.6);
 }
@@ -145,7 +143,6 @@
   --live-to: #ffd3db;
   --live-glow-a: rgba(206, 17, 38, 0.5);
   --live-glow-b: rgba(37, 99, 235, 0.38);
-  --live-ring: rgba(206, 17, 38, 0.5);
   --live-stripe: rgba(206, 17, 38, 0.12);
   --live-edge: rgba(206, 17, 38, 0.55);
 }
@@ -324,15 +321,17 @@ select option:hover {
 
 /* =================================================================
    LIVE EVENT BAND (dashboard "Happening now")
-   A full-width band behind the live tournament card. Everything in it
-   moves; the card on top does not. Colors come from the --live-* tokens
+   A full-width band behind the live tournament card, with drifting
+   light and sliding lines. Colors come from the --live-* tokens
    of the active theme. Only transform and opacity are animated.
    ================================================================= */
 .live-band {
   margin-block-start: 2rem;
   position: relative;
   isolation: isolate;
+  /* clip, not hidden: the oversized glows must never make the band scrollable (focus would scroll it) */
   overflow: hidden;
+  overflow: clip;
   background: linear-gradient(118deg, var(--live-from), var(--live-to));
   border-block: 1px solid var(--live-edge);
 }
@@ -374,22 +373,6 @@ select option:hover {
   animation: live-stripes 3.5s linear infinite;
 }
 
-/* Rings spreading out like a pulse, one after the other */
-.live-ring {
-  inset-block-start: 50%;
-  inset-inline-end: 12%;
-  width: min(120vw, 980px);
-  aspect-ratio: 1;
-  margin-block-start: calc(min(120vw, 980px) / -2);
-  border-radius: 50%;
-  border: 2px solid var(--live-ring);
-  opacity: 0;
-  transform: scale(0.15);
-  animation: live-ring 7.5s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
-}
-.live-ring-2 { animation-delay: 2.5s; }
-.live-ring-3 { animation-delay: 5s; }
-
 .live-card {
   background: var(--color-ink-700);
   border: 1px solid rgba(var(--flag-rgb), 0.65);
@@ -408,14 +391,7 @@ select option:hover {
   from { transform: skewX(-24deg) translateX(0); }
   to   { transform: skewX(-24deg) translateX(40px); }
 }
-@keyframes live-ring {
-  0%   { opacity: 0; transform: scale(0.15); }
-  12%  { opacity: 0.9; }
-  100% { opacity: 0; transform: scale(1); }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .live-glow, .live-stripes::before { animation: none; }
-  .live-ring { animation: none; opacity: 0.35; transform: scale(0.5); }
-  .live-ring-2, .live-ring-3 { display: none; }
 }
