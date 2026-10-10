@@ -198,6 +198,7 @@ export default function ApplyOfficialPage() {
                 <Field id="fn" label={t.firstName} error={errors.firstName}>
                   <Input
                     id="fn"
+                    english="name"
                     value={form.firstName}
                     onChange={(e) => set("firstName", e.target.value)}
                     error={!!errors.firstName}
@@ -206,6 +207,7 @@ export default function ApplyOfficialPage() {
                 <Field id="ln" label={t.lastName} error={errors.lastName}>
                   <Input
                     id="ln"
+                    english="name"
                     value={form.lastName}
                     onChange={(e) => set("lastName", e.target.value)}
                     error={!!errors.lastName}

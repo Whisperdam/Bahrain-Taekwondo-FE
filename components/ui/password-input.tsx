@@ -19,6 +19,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
         <Input
           ref={ref}
           type={show ? "text" : "password"}
+          english={false} // any character is a valid password
           className={cn("ltr:pr-10 rtl:pl-10", className)}
           {...props}
         />

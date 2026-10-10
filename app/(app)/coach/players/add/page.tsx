@@ -631,6 +631,7 @@ function DetailsStep({
       <Field id="en" label={t.emergencyName}>
         <Input
           id="en"
+          english="name"
           value={form.emergencyContactName}
           onChange={(e) => set("emergencyContactName", e.target.value)}
         />

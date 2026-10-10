@@ -83,6 +83,7 @@ export default function RegisterPage() {
             id="reg-name"
             placeholder={t("fullNamePh")}
             autoComplete="name"
+            english="name"
             error={!!errors.fullName}
             {...register("fullName")}
           />
@@ -97,6 +98,7 @@ export default function RegisterPage() {
             id="reg-username"
             placeholder={t("usernamePh")}
             autoComplete="username"
+            english="username"
             error={!!errors.username}
             {...register("username")}
           />

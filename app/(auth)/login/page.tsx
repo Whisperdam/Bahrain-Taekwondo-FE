@@ -69,6 +69,7 @@ export default function LoginPage() {
             type="text"
             placeholder={t("userOrEmailPh")}
             autoComplete="username"
+            english={false} // accounts made before the English-only rule must still be able to sign in
             error={!!errors.username}
             {...register("username")}
           />
