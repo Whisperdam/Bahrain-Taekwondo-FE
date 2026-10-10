@@ -21,9 +21,11 @@ import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { DropdownMenu, MenuItem } from "@/components/ui/dropdown-menu";
+import { ClassPicker, useClassSelection } from "@/components/admin/class-picker";
 import { useAuth } from "@/hooks/use-auth";
 import { useLangStore } from "@/lib/i18n/store";
 import { ADMIN_STRINGS } from "@/lib/i18n/admin-strings";
+import { CLASSES_STRINGS } from "@/lib/i18n/classes-strings";
 import {
   listTournamentsAdmin,
   createTournament,
@@ -353,7 +355,11 @@ function TournamentFormModal({
 }) {
   const { lang } = useLangStore();
   const t = ADMIN_STRINGS[lang];
+  const ct = CLASSES_STRINGS[lang];
   const qc = useQueryClient();
+  const selection = useClassSelection(open, editing?.tournamentId ?? null);
+  // once it has started the classes are fixed
+  const classesLocked = !!editing && editing.status !== "UPCOMING";
 
   const [form, setForm] = useState<FormState>(() => ({
     tournamentName: editing?.tournamentName ?? "",
@@ -388,6 +394,7 @@ function TournamentFormModal({
           ? Number(form.maxParticipants)
           : undefined,
         status: form.status,
+        categoryIds: !editing ? selection.selected : selection.changed ? selection.selected : undefined,
       };
       return editing
         ? updateTournament(editing.tournamentId, body)
@@ -424,6 +431,8 @@ function TournamentFormModal({
     ) {
       e.registrationDeadline = t.errTDeadline;
     }
+    if (!editing && selection.selected.length === 0) e.classes = ct.pickerRequired;
+    if (editing && selection.changed && selection.selected.length === 0) e.classes = ct.pickerRequired;
     setErrors(e);
     if (Object.keys(e).length === 0) saveMutation.mutate();
   }
@@ -443,6 +452,7 @@ function TournamentFormModal({
           <PrimaryButton
             type="button"
             onClick={validateAndSave}
+            disabled={!selection.ready}
             loading={saveMutation.isPending}
             loadingText={t.saving}
             className="w-auto px-4"
@@ -545,6 +555,20 @@ function TournamentFormModal({
           />
         </Field>
       </div>
+
+      <ClassPicker
+        groups={selection.groups}
+        value={selection.selected}
+        onChange={(ids) => {
+          selection.setSelected(ids);
+          if (errors.classes) setErrors((e) => ({ ...e, classes: "" }));
+        }}
+        loading={!selection.ready}
+        failed={selection.isError}
+        disabled={classesLocked}
+        error={errors.classes}
+        t={ct}
+      />
 
       <Field id="td" label={t.tDescription}>
         <Textarea

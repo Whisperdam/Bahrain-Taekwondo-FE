@@ -3,7 +3,6 @@ import type { TournamentDTO } from "@/types/dashboard";
 import type {
   TournamentParticipantDTO,
   TournamentRegistrationRequest,
-  WeightCategoryDTO,
 } from "@/types/tournament";
 
 export async function fetchTournament(id: number): Promise<TournamentDTO> {
@@ -42,12 +41,3 @@ export async function withdrawParticipant(
   );
 }
 
-/** With `gender`, only the classes that gender may enter (own division + mixed). */
-export async function fetchWeightCategories(
-  gender?: "MALE" | "FEMALE",
-): Promise<WeightCategoryDTO[]> {
-  const res = await apiClient.get<WeightCategoryDTO[]>("/api/weight-categories", {
-    params: gender ? { gender } : undefined,
-  });
-  return res.data;
-}

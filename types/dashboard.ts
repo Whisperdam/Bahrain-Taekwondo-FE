@@ -1,3 +1,5 @@
+import type { AgeGroupView } from "@/types/classes";
+
 export interface TournamentDTO {
   tournamentId: number;
   tournamentName: string;
@@ -18,6 +20,8 @@ export interface TournamentDTO {
   pointsPublishAt?: string | null;
   /** When the ranking points were published; null until then. */
   pointsFinalizedAt?: string | null;
+  /** The age groups the tournament accepts (only on GET /api/tournaments/{id}). */
+  eligibleAgeGroups?: AgeGroupView[] | null;
 }
 
 export type RegistrationClosedReason =
@@ -38,6 +42,9 @@ export interface NationalRankingDTO {
   categoryId: number;
   categoryName: string;
   categoryGender: string;
+  /** Positions are separate for each age group and gender. */
+  ageGroupId: number | null;
+  ageGroupName: string | null;
   tournamentsParticipated: number;
   goldMedals: number;
   silverMedals: number;

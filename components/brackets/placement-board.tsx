@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { format, parseISO } from "date-fns";
 import { Lock, Search, UserX } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
@@ -14,10 +15,10 @@ import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { getApiErrorMessage } from "@/lib/api/errors";
-import { fetchWeightCategories } from "@/lib/tournaments/api";
+import { fetchTournamentClasses } from "@/lib/classes/api";
 import { fetchWeighInBoard, placeBulk, placeEntry } from "@/lib/brackets/api";
 import type { BracketStrings } from "@/lib/i18n/bracket-strings";
-import type { WeightCategoryDTO } from "@/types/tournament";
+import type { AgeGroupWithClasses, ClassView } from "@/types/classes";
 import type { BulkPlacementRequest, EntryStatus, WeighInBoard, WeighInEntry } from "@/types/bracket";
 
 type StatusFilter = "ALL" | EntryStatus;
@@ -33,10 +34,10 @@ const ROW_GRID =
 
 /** The first class whose weight window (min, max] holds the weight and that the player may enter. */
 function suggestClass(
-  categories: WeightCategoryDTO[],
+  categories: ClassView[],
   entry: WeighInEntry,
   weight: number | null,
-): WeightCategoryDTO | undefined {
+): ClassView | undefined {
   if (weight == null) return undefined;
   return categories.find(
     (c) =>
@@ -62,10 +63,12 @@ export function PlacementBoard({ tournamentId, t, lockedCategoryIds }: Placement
     queryFn: () => fetchWeighInBoard(tournamentId),
     staleTime: 0,
   });
-  const categoriesQ = useQuery({
-    queryKey: ["weight-categories", "all"],
-    queryFn: () => fetchWeightCategories(),
-    staleTime: 60 * 60 * 1000,
+  // The classes this tournament accepts, by age group: a player can only be placed in a class
+  // of the age group their age falls in.
+  const classesQ = useQuery({
+    queryKey: ["tournaments", "detail", tournamentId, "classes"],
+    queryFn: () => fetchTournamentClasses(tournamentId),
+    staleTime: 60 * 1000,
   });
 
   const [search, setSearch] = useState("");
@@ -75,7 +78,7 @@ export function PlacementBoard({ tournamentId, t, lockedCategoryIds }: Placement
   const [confirmPlaceAll, setConfirmPlaceAll] = useState(false);
 
   const entries = useMemo(() => boardQ.data?.entries ?? [], [boardQ.data]);
-  const categories = useMemo(() => categoriesQ.data ?? [], [categoriesQ.data]);
+  const classGroups = useMemo(() => classesQ.data ?? [], [classesQ.data]);
 
   function replaceEntry(updated: WeighInEntry) {
     queryClient.setQueryData<WeighInBoard>(boardKey, (board) =>
@@ -178,6 +181,10 @@ export function PlacementBoard({ tournamentId, t, lockedCategoryIds }: Placement
 
   return (
     <div>
+      <div className="mb-4 rounded-lg border border-ink-600/70 bg-ink-700 px-4 py-2.5 text-sm text-slate-300">
+        {t.idCheckNote}
+      </div>
+
       {boardQ.data?.registrationOpen && (
         <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-sm text-amber-100">
           {t.registrationStillOpen}
@@ -287,7 +294,7 @@ export function PlacementBoard({ tournamentId, t, lockedCategoryIds }: Placement
                   key={entry.participantId}
                   entry={entry}
                   t={t}
-                  categories={categories}
+                  classGroups={classGroups}
                   lockedCategoryIds={lockedCategoryIds}
                   locked={isLocked(entry)}
                   selected={selected.has(entry.participantId)}
@@ -343,7 +350,7 @@ function Stat({
 function EntryRow({
   entry,
   t,
-  categories,
+  classGroups,
   lockedCategoryIds,
   locked,
   selected,
@@ -353,7 +360,7 @@ function EntryRow({
 }: {
   entry: WeighInEntry;
   t: BracketStrings;
-  categories: WeightCategoryDTO[];
+  classGroups: AgeGroupWithClasses[];
   lockedCategoryIds: Set<number>;
   locked: boolean;
   selected: boolean;
@@ -362,7 +369,8 @@ function EntryRow({
   onChange: (body: { action: "PLACE" | "NO_SHOW" | "RESET"; categoryId?: number; weighInWeight?: number }) => void;
 }) {
   const [weight, setWeight] = useState(entry.weighInWeight != null ? String(entry.weighInWeight) : "");
-  const options = categories.filter((c) => c.gender === "MIXED" || c.gender === entry.gender);
+  const ageGroup = classGroups.find((g) => g.name === entry.ageGroupName);
+  const options = (ageGroup?.classes ?? []).filter((c) => c.gender === "MIXED" || c.gender === entry.gender);
   const typed = weight.trim() === "" ? null : Number(weight);
   const validWeight = typed != null && Number.isFinite(typed) && typed > 0 && typed <= 300 ? typed : null;
   const suggestion =
@@ -397,6 +405,13 @@ function EntryRow({
         <div className="text-xs text-slate-500 truncate">
           {[entry.academyName, entry.beltName].filter(Boolean).join(" · ")}
         </div>
+        <div className="text-xs text-slate-400 tabular-nums">
+          {t.bornOn(format(parseISO(entry.dateOfBirth), "PP"))} · {t.ageIs(entry.age)}
+          {entry.ageGroupName ? ` · ${entry.ageGroupName}` : ""}
+        </div>
+        {!entry.ageGroupName && (
+          <div className="text-[11px] text-amber-300">{t.ageNotAccepted}</div>
+        )}
       </div>
       <div className="hidden md:block text-xs text-slate-400 truncate">{entry.declaredCategoryName}</div>
       <div className="col-span-2 md:col-span-1">
@@ -416,7 +431,7 @@ function EntryRow({
               <option value="">{t.pickClass}</option>
               {options.map((c) => (
                 <option key={c.categoryId} value={c.categoryId} disabled={lockedCategoryIds.has(c.categoryId)}>
-                  {c.categoryName}
+                  {c.name}
                 </option>
               ))}
             </Select>
@@ -427,7 +442,7 @@ function EntryRow({
                 onClick={() => onChange({ action: "PLACE", categoryId: suggestion.categoryId, weighInWeight: validWeight ?? undefined })}
                 className="mt-1 text-[11px] text-flag hover:text-flag-hover transition-colors"
               >
-                {t.suggestClass(suggestion.categoryName)}
+                {t.suggestClass(suggestion.name)}
               </button>
             )}
           </>

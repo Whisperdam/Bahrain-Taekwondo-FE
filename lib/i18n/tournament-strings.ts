@@ -76,6 +76,15 @@ export const TOURNAMENT_STRINGS = {
     registering: "Registering…",
     registerSuccess: (name: string) => `${name} registered.`,
     registerFailed: "Couldn't register this player. Please try again.",
+    classesLoadFailed: "Couldn't load this tournament's weight classes.",
+    playerAge: (age: number) => `age ${age}`,
+    ageNotAccepted: "age not accepted",
+    ageNotOpen: (age: number, year: number, groups: string) =>
+      `This tournament is open to ages ${groups}, counted by year of birth. This player is ${age} in ${year}.`,
+    noClassesForPlayer: "This tournament has no weight class for this player's age and gender.",
+
+    // ── Summary card
+    openToAges: "Open to ages",
   },
   ar: {
     backToTournaments: "البطولات",
@@ -145,6 +154,15 @@ export const TOURNAMENT_STRINGS = {
     registering: "جارٍ التسجيل…",
     registerSuccess: (name: string) => `تم تسجيل ${name}.`,
     registerFailed: "تعذر تسجيل هذا اللاعب. حاول مرة أخرى.",
+    classesLoadFailed: "تعذر تحميل فئات الوزن لهذه البطولة.",
+    playerAge: (age: number) => `العمر ${age}`,
+    ageNotAccepted: "العمر غير مقبول",
+    ageNotOpen: (age: number, year: number, groups: string) =>
+      `هذه البطولة مفتوحة للأعمار ${groups}، وتُحسب بسنة الميلاد. عمر هذا اللاعب ${age} في ${year}.`,
+    noClassesForPlayer: "لا توجد في هذه البطولة فئة وزن تناسب عمر هذا اللاعب وجنسه.",
+
+    // ── Summary card
+    openToAges: "مفتوحة للأعمار",
   },
 } as const;
 

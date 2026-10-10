@@ -95,6 +95,12 @@ export interface WeighInEntry {
   academyId: number | null;
   academyName: string | null;
   beltName: string | null;
+  /** For checking against the player's ID at the weigh-in (YYYY-MM-DD). */
+  dateOfBirth: string;
+  /** The age that counts for this tournament: its year minus the birth year. */
+  age: number;
+  /** The tournament's age group that age falls in; null if none of its groups covers it. */
+  ageGroupName: string | null;
   rankingPoints: number;
   declaredCategoryId: number;
   declaredCategoryName: string;

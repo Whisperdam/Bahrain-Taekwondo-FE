@@ -1,5 +1,5 @@
 // Tournament registration types mirroring backend DTOs
-// (TournamentParticipantDTO, WeightCategoryDTO, TournamentRegistrationRequestDTO).
+// (TournamentParticipantDTO, TournamentRegistrationRequestDTO).
 
 export type ParticipantStatus =
   | "REGISTERED"
@@ -27,15 +27,6 @@ export interface TournamentParticipantDTO {
   categoryName: string;
   categoryGender: CategoryGender;
   status: ParticipantStatus;
-}
-
-export interface WeightCategoryDTO {
-  categoryId: number;
-  categoryName: string;
-  gender: CategoryGender;
-  minWeight: number | null;
-  maxWeight: number | null;
-  ageGroup: string | null;
 }
 
 export interface TournamentRegistrationRequest {

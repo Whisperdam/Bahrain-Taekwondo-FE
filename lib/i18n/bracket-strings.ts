@@ -174,6 +174,11 @@ export const BRACKET_STRINGS = {
         ? `${updated} updated, ${skipped} left as they were (their class is already published)`
         : `${updated} updated`,
     lockedHint: "This class has a published bracket. Unpublish it to change who is in it.",
+    idCheckNote:
+      "At the weigh-in, check each player's date of birth against their ID. If it doesn't match what is shown here, mark them as no-show instead of placing them.",
+    bornOn: (date: string) => `Born ${date}`,
+    ageIs: (age: number) => `age ${age}`,
+    ageNotAccepted: "Age not accepted by this tournament",
 
     // Brackets tab
     seeding: "Seeding",
@@ -371,6 +376,11 @@ export const BRACKET_STRINGS = {
         ? `تم تحديث ${updated}، وبقي ${skipped} كما هم (جدول فئتهم منشور)`
         : `تم تحديث ${updated}`,
     lockedHint: "هذه الفئة لها جدول منشور. ألغِ نشره لتغيير من فيه.",
+    idCheckNote:
+      "عند الوزن، قارن تاريخ ميلاد كل لاعب بهويته. إذا لم يطابق ما هو معروض هنا، فاحتسبه غير حاضر بدل توزيعه.",
+    bornOn: (date: string) => `وُلد في ${date}`,
+    ageIs: (age: number) => `العمر ${age}`,
+    ageNotAccepted: "العمر غير مقبول في هذه البطولة",
 
     seeding: "التصنيف",
     seedRanking: "حسب الترتيب والباقي بالقرعة",

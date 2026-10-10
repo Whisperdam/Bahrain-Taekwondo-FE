@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Award, Medal, Building2, Users, Trophy, ArrowRight, ChevronRight, UserCheck } from "lucide-react";
+import { Award, Medal, Building2, Users, Trophy, ArrowRight, ChevronRight, UserCheck, Layers } from "lucide-react";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -193,6 +193,11 @@ function Content() {
               icon={Medal}
               label={t.qlOfficials}
               href="/admin/officials"
+            />
+            <QuickLink
+              icon={Layers}
+              label={t.qlClasses}
+              href="/admin/classes"
             />
           </div>
         </section>

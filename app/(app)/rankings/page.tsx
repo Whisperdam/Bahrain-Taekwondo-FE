@@ -18,6 +18,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useLangStore } from "@/lib/i18n/store";
 import { BROWSE_STRINGS } from "@/lib/i18n/browse-strings";
 import { listRankings } from "@/lib/dashboard/api";
+import { fetchAgeGroups } from "@/lib/classes/api";
 import type { NationalRankingDTO } from "@/types/dashboard";
 
 const PAGE_SIZE = 15;
@@ -37,6 +38,7 @@ export default function RankingsBrowsePage() {
   const [season, setSeason] = useState(DEFAULT_SEASON);
   const [q, setQ] = useState("");
   const [gender, setGender] = useState<"" | "MALE" | "FEMALE">("");
+  const [ageGroup, setAgeGroup] = useState("");
   const [sort, setSort] = useState<string>("rankPosition,asc");
   const [page, setPage] = useState(0);
 
@@ -44,16 +46,23 @@ export default function RankingsBrowsePage() {
   const debouncedSeason = useDebouncedValue(season, 300);
 
   const listQ = useQuery({
-    queryKey: ["rankings", "browse", { season: debouncedSeason, q: debouncedQ, gender, sort, page }],
+    queryKey: ["rankings", "browse", { season: debouncedSeason, q: debouncedQ, gender, ageGroup, sort, page }],
     queryFn: () =>
       listRankings({
         season: debouncedSeason || undefined,
         q: debouncedQ || undefined,
         gender: gender || undefined,
+        ageGroupId: ageGroup ? Number(ageGroup) : undefined,
         sort,
         page,
         size: PAGE_SIZE,
       }),
+  });
+
+  const ageGroupsQ = useQuery({
+    queryKey: ["age-groups"],
+    queryFn: fetchAgeGroups,
+    staleTime: 10 * 60 * 1000,
   });
 
   if (!user) return null;
@@ -73,7 +82,7 @@ export default function RankingsBrowsePage() {
         />
 
         {/* Filters bar */}
-        <div className="bg-ink-700 border border-ink-600/70 rounded-xl p-4 mb-5 grid grid-cols-1 md:grid-cols-[1fr_140px_150px_220px_auto] gap-3 items-end">
+        <div className="bg-ink-700 border border-ink-600/70 rounded-xl p-4 mb-5 grid grid-cols-1 md:grid-cols-[1fr_120px_140px_170px_190px_auto] gap-3 items-end">
           <Field id="q" label={t.search}>
             <div className="relative">
               <span className="pointer-events-none absolute top-1/2 -translate-y-1/2 ltr:left-3 rtl:right-3 text-slate-400">
@@ -116,6 +125,23 @@ export default function RankingsBrowsePage() {
               <option value="FEMALE">{t.genderFEMALE}</option>
             </Select>
           </Field>
+          <Field id="age-group" label={t.ageGroup}>
+            <Select
+              id="age-group"
+              value={ageGroup}
+              onChange={(e) => {
+                setAgeGroup(e.target.value);
+                setPage(0);
+              }}
+            >
+              <option value="">{t.ageGroupAll}</option>
+              {(ageGroupsQ.data ?? []).map((g) => (
+                <option key={g.ageGroupId} value={g.ageGroupId}>
+                  {g.name} ({g.minAge}–{g.maxAge})
+                </option>
+              ))}
+            </Select>
+          </Field>
           <Field id="sort" label={t.sortBy}>
             <Select
               id="sort"
@@ -138,9 +164,10 @@ export default function RankingsBrowsePage() {
               setQ("");
               setSeason(DEFAULT_SEASON);
               setGender("");
+              setAgeGroup("");
               setPage(0);
             }}
-            disabled={!q && !gender && season === DEFAULT_SEASON}
+            disabled={!q && !gender && !ageGroup && season === DEFAULT_SEASON}
             className="text-sm text-slate-300 hover:text-flag px-3 py-2.5 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-slate-300 transition-colors"
           >
             {t.clearFilters}

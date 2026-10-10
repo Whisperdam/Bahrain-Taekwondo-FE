@@ -109,6 +109,8 @@ export interface ListRankingsParams {
   q?: string;
   /** MALE or FEMALE — male/female divisions rank separately (each has its own #1). */
   gender?: "MALE" | "FEMALE";
+  /** One age group; each age group and gender ranks separately. */
+  ageGroupId?: number;
   sort?: string;
   page?: number;
   size?: number;
@@ -121,6 +123,7 @@ export async function listRankings(
   if (params.season) p.set("season", params.season);
   if (params.q) p.set("q", params.q);
   if (params.gender) p.set("gender", params.gender);
+  if (params.ageGroupId != null) p.set("ageGroupId", String(params.ageGroupId));
   if (params.sort) p.set("sort", params.sort);
   if (params.page != null) p.set("page", String(params.page));
   if (params.size != null) p.set("size", String(params.size));

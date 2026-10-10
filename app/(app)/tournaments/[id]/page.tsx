@@ -11,6 +11,7 @@ import {
   CalendarDays,
   CircleCheck,
   Clock,
+  Layers,
   Lock,
   MapPin,
   Medal,
@@ -318,6 +319,7 @@ export default function TournamentDetailsPage({
       {registerOpen && tournament && (
         <RegisterPlayerModal
           tournamentId={tournament.tournamentId}
+          startDate={tournament.startDate}
           academies={myAcademies}
           registeredPlayerIds={registeredPlayerIds}
           t={t}
@@ -398,6 +400,13 @@ function SummaryCard({
           {tournament.registrationDeadline &&
             formatDate(tournament.registrationDeadline)}
         </InfoRow>
+        {(tournament.eligibleAgeGroups?.length ?? 0) > 0 && (
+          <InfoRow icon={Layers} label={t.openToAges}>
+            {tournament.eligibleAgeGroups
+              ?.map((g) => `${g.name} (${g.minAge}–${g.maxAge})`)
+              .join(", ")}
+          </InfoRow>
+        )}
         {tournament.status === "COMPLETED" && (
           <InfoRow icon={Medal} label={t.rankingPoints}>
             {tournament.pointsFinalizedAt

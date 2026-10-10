@@ -51,6 +51,8 @@ export interface TournamentRequest {
   maxParticipants?: number;
   status?: TournamentStatus;
   bannerImageUrl?: string;
+  /** The weight classes the tournament accepts. Required when creating; leave out on edit to keep them. */
+  categoryIds?: number[];
 }
 
 export type AcademyStatus = "ACTIVE" | "INACTIVE";
