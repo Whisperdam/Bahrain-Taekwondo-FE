@@ -44,10 +44,12 @@ export function LiveEventsSection({ lang }: LiveEventsSectionProps) {
       <div className="live-layer live-ring live-ring-2" aria-hidden="true" />
       <div className="live-layer live-ring live-ring-3" aria-hidden="true" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      {/* Equal padding above and below, so the card sits in the middle of the band. The
+          label is placed in the top padding rather than above the card. */}
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <h2
           id="live-h"
-          className="mb-5 inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.22em] text-white sm:text-base"
+          className="absolute start-4 top-5 inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.22em] text-white sm:start-6 sm:top-6 sm:text-base lg:start-8"
         >
           <span className="relative flex h-3 w-3" aria-hidden="true">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flag opacity-70" />

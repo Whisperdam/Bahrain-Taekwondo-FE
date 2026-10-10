@@ -54,13 +54,15 @@ export default function DashboardPage() {
     <>
       <TopNav user={user} />
 
-      {/* Only present while a tournament is being held: a full-width band, the headline then */}
-      <LiveEventsSection lang={lang} />
+      <main className="pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <WelcomeBanner firstName={user.firstName} lang={lang} />
+        </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <WelcomeBanner firstName={user.firstName} lang={lang} />
+        {/* Only present while a tournament is being held: a full-width band under the welcome text */}
+        <LiveEventsSection lang={lang} />
 
-        <div className="mt-10 flex flex-col gap-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 flex flex-col gap-14">
           <UpgradeSection roles={user.roles} lang={lang} />
 
           <TournamentsSection

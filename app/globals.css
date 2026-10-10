@@ -100,9 +100,9 @@
   --live-from: #0b0b0c;
   --live-to: #2e2e32;
   --live-glow-a: rgba(255, 255, 255, 0.34);
-  --live-glow-b: rgba(161, 161, 170, 0.45);
+  --live-glow-b: rgba(206, 17, 38, 0.6);
   --live-ring: rgba(255, 255, 255, 0.5);
-  --live-stripe: rgba(255, 255, 255, 0.09);
+  --live-stripe: rgba(235, 45, 65, 0.17);
   --live-edge: rgba(228, 228, 231, 0.6);
 }
 
@@ -329,6 +329,7 @@ select option:hover {
    of the active theme. Only transform and opacity are animated.
    ================================================================= */
 .live-band {
+  margin-block-start: 2rem;
   position: relative;
   isolation: isolate;
   overflow: hidden;
