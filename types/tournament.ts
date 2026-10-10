@@ -26,9 +26,6 @@ export interface TournamentParticipantDTO {
   categoryId: number;
   categoryName: string;
   categoryGender: CategoryGender;
-  registrationDate: string | null;
-  weighInWeight: number | null;
-  seedNumber: number | null;
   status: ParticipantStatus;
 }
 

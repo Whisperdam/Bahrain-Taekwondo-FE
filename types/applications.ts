@@ -132,6 +132,44 @@ export interface AcademyApplicationSummary {
   reviewedAt: string | null;
 }
 
+// The applicant's own lists carry only what the "My Applications" page shows.
+export interface MyCoachApplication {
+  applicationId: number;
+  applicantFirstName: string;
+  applicantLastName: string;
+  certificationLevel: string | null;
+  status: ApplicationStatus;
+  submittedAt: string;
+  reviewedAt: string | null;
+}
+
+export interface MyOfficialApplication {
+  applicationId: number;
+  applicantFirstName: string;
+  applicantLastName: string;
+  certificationLevel: OfficialCertLevel | null;
+  specialization: OfficialSpecialization | null;
+  status: ApplicationStatus;
+  submittedAt: string;
+  reviewedAt: string | null;
+}
+
+export interface MyAcademyApplication {
+  applicationId: number;
+  proposedName: string;
+  proposedLocation: string | null;
+  status: ApplicationStatus;
+  submittedAt: string;
+  reviewedAt: string | null;
+}
+
+/** What submitting or withdrawing an application answers with. */
+export interface ApplicationReceipt {
+  applicationId: number;
+  status: ApplicationStatus;
+  submittedAt: string;
+}
+
 /** Unified row used by the "My Applications" list. */
 export type ApplicationType = "COACH" | "OFFICIAL" | "ACADEMY";
 

@@ -1,14 +1,12 @@
 import apiClient from "@/lib/api/client";
 import type {
   CoachApplicationRequest,
-  CoachApplicationDetail,
-  CoachApplicationSummary,
   OfficialApplicationRequest,
-  OfficialApplicationDetail,
-  OfficialApplicationSummary,
   AcademyApplicationRequest,
-  AcademyApplicationDetail,
-  AcademyApplicationSummary,
+  MyCoachApplication,
+  MyOfficialApplication,
+  MyAcademyApplication,
+  ApplicationReceipt,
   DocumentSummary,
   DocumentOwnerType,
   DocumentType,
@@ -16,8 +14,8 @@ import type {
 
 export async function submitCoachApplication(
   data: CoachApplicationRequest,
-): Promise<CoachApplicationDetail> {
-  const res = await apiClient.post<CoachApplicationDetail>(
+): Promise<ApplicationReceipt> {
+  const res = await apiClient.post<ApplicationReceipt>(
     "/api/applications/coach",
     data,
   );
@@ -26,8 +24,8 @@ export async function submitCoachApplication(
 
 export async function submitOfficialApplication(
   data: OfficialApplicationRequest,
-): Promise<OfficialApplicationDetail> {
-  const res = await apiClient.post<OfficialApplicationDetail>(
+): Promise<ApplicationReceipt> {
+  const res = await apiClient.post<ApplicationReceipt>(
     "/api/applications/official",
     data,
   );
@@ -36,8 +34,8 @@ export async function submitOfficialApplication(
 
 export async function submitAcademyApplication(
   data: AcademyApplicationRequest,
-): Promise<AcademyApplicationDetail> {
-  const res = await apiClient.post<AcademyApplicationDetail>(
+): Promise<ApplicationReceipt> {
+  const res = await apiClient.post<ApplicationReceipt>(
     "/api/applications/academy",
     data,
   );
@@ -52,26 +50,26 @@ export interface UploadDocumentParams {
 }
 
 // ── List "my applications" ──────────────────────────────────────────────────
-export async function listMyCoachApplications(): Promise<CoachApplicationSummary[]> {
-  const res = await apiClient.get<CoachApplicationSummary[]>(
+export async function listMyCoachApplications(): Promise<MyCoachApplication[]> {
+  const res = await apiClient.get<MyCoachApplication[]>(
     "/api/applications/coach/my",
   );
   return res.data;
 }
 
 export async function listMyOfficialApplications(): Promise<
-  OfficialApplicationSummary[]
+  MyOfficialApplication[]
 > {
-  const res = await apiClient.get<OfficialApplicationSummary[]>(
+  const res = await apiClient.get<MyOfficialApplication[]>(
     "/api/applications/official/my",
   );
   return res.data;
 }
 
 export async function listMyAcademyApplications(): Promise<
-  AcademyApplicationSummary[]
+  MyAcademyApplication[]
 > {
-  const res = await apiClient.get<AcademyApplicationSummary[]>(
+  const res = await apiClient.get<MyAcademyApplication[]>(
     "/api/applications/academy/my",
   );
   return res.data;
@@ -80,8 +78,8 @@ export async function listMyAcademyApplications(): Promise<
 // ── Withdraw ────────────────────────────────────────────────────────────────
 export async function withdrawCoachApplication(
   id: number,
-): Promise<CoachApplicationDetail> {
-  const res = await apiClient.put<CoachApplicationDetail>(
+): Promise<ApplicationReceipt> {
+  const res = await apiClient.put<ApplicationReceipt>(
     `/api/applications/coach/${id}/withdraw`,
   );
   return res.data;
@@ -89,8 +87,8 @@ export async function withdrawCoachApplication(
 
 export async function withdrawOfficialApplication(
   id: number,
-): Promise<OfficialApplicationDetail> {
-  const res = await apiClient.put<OfficialApplicationDetail>(
+): Promise<ApplicationReceipt> {
+  const res = await apiClient.put<ApplicationReceipt>(
     `/api/applications/official/${id}/withdraw`,
   );
   return res.data;
@@ -98,8 +96,8 @@ export async function withdrawOfficialApplication(
 
 export async function withdrawAcademyApplication(
   id: number,
-): Promise<AcademyApplicationDetail> {
-  const res = await apiClient.put<AcademyApplicationDetail>(
+): Promise<ApplicationReceipt> {
+  const res = await apiClient.put<ApplicationReceipt>(
     `/api/applications/academy/${id}/withdraw`,
   );
   return res.data;
