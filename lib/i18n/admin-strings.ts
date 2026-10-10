@@ -287,6 +287,7 @@ export const ADMIN_STRINGS = {
 
     filterAllStatuses: "All",
     actionEdit: "Edit",
+    actionBrackets: "Weigh-in & brackets",
     loadFailed: "Couldn't load data. Please try again.",
     retry: "Retry",
   },
@@ -561,6 +562,7 @@ export const ADMIN_STRINGS = {
 
     filterAllStatuses: "الكل",
     actionEdit: "تعديل",
+    actionBrackets: "الوزن والجداول",
     loadFailed: "تعذر تحميل البيانات. حاول مرة أخرى.",
     retry: "إعادة المحاولة",
   },

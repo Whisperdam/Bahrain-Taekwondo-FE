@@ -43,6 +43,7 @@ export const TOURNAMENT_STRINGS = {
     statusREGISTERED: "Registered",
     statusCONFIRMED: "Confirmed",
     statusDISQUALIFIED: "Disqualified",
+    statusNO_SHOW: "No-show",
     entriesCount: (n: number) => `${n} ${n === 1 ? "entry" : "entries"}`,
 
     // ── Withdraw
@@ -110,6 +111,7 @@ export const TOURNAMENT_STRINGS = {
     statusREGISTERED: "مسجّل",
     statusCONFIRMED: "مؤكّد",
     statusDISQUALIFIED: "مستبعد",
+    statusNO_SHOW: "لم يحضر",
     entriesCount: (n: number) => `${n} ${n === 1 ? "مشاركة" : "مشاركات"}`,
 
     withdraw: "سحب",

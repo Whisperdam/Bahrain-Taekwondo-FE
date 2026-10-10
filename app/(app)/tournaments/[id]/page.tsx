@@ -32,6 +32,9 @@ import {
   TournamentTypeBadge,
 } from "@/components/tournaments/tournament-badges";
 import { RegisterPlayerModal } from "@/components/tournaments/register-player-modal";
+import { BracketList } from "@/components/brackets/bracket-list";
+import { BRACKET_STRINGS } from "@/lib/i18n/bracket-strings";
+import { fetchBrackets } from "@/lib/brackets/api";
 import { useAuth } from "@/hooks/use-auth";
 import { useLangStore } from "@/lib/i18n/store";
 import { BROWSE_STRINGS } from "@/lib/i18n/browse-strings";
@@ -74,6 +77,7 @@ export default function TournamentDetailsPage({
   const { lang } = useLangStore();
   const b = BROWSE_STRINGS[lang];
   const t = TOURNAMENT_STRINGS[lang];
+  const bt = BRACKET_STRINGS[lang];
 
   const [registerOpen, setRegisterOpen] = useState(false);
   const [withdrawTarget, setWithdrawTarget] =
@@ -95,6 +99,18 @@ export default function TournamentDetailsPage({
     queryKey: ["tournaments", "detail", id, "participants"],
     queryFn: () => fetchParticipants(id),
     enabled: Number.isFinite(id) && !!tournamentQ.data,
+  });
+
+  // Brackets: shown once published (admins also see drafts). While any bracket is
+  // still being played the list refreshes by itself, so progress and champions
+  // appear without reloading.
+  const bracketsQ = useQuery({
+    queryKey: ["brackets", "list", id],
+    queryFn: () => fetchBrackets(id),
+    enabled: Number.isFinite(id) && !!tournamentQ.data,
+    refetchInterval: (query) =>
+      query.state.data?.some((b) => b.status === "PUBLISHED" && !b.complete) ? 15000 : false,
+    refetchIntervalInBackground: false,
   });
 
   // Which academies the viewer coaches decides whose entries they may withdraw
@@ -207,6 +223,15 @@ export default function TournamentDetailsPage({
                 t={t}
                 onRegister={canRegister ? () => setRegisterOpen(true) : undefined}
               />
+
+              {((bracketsQ.data?.length ?? 0) > 0 || isAdmin) && (
+                <BracketList
+                  tournamentId={tournament.tournamentId}
+                  brackets={bracketsQ.data ?? []}
+                  isAdmin={isAdmin}
+                  t={bt}
+                />
+              )}
 
               <section className="card bg-ink-700 border border-ink-600/70 rounded-xl p-6">
                 <SectionHeader title={t.about} />
@@ -533,7 +558,9 @@ function ParticipantRow({
             className={`inline-flex items-center text-[10px] uppercase tracking-[0.14em] font-medium border rounded px-1.5 py-0.5 ${
               flagged
                 ? "bg-red-500/10 text-red-300 border-red-500/30"
-                : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+                : entry.status === "NO_SHOW"
+                  ? "bg-amber-500/10 text-amber-300 border-amber-500/30"
+                  : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
             }`}
           >
             {t[`status${entry.status}` as keyof TournamentStrings] as string}

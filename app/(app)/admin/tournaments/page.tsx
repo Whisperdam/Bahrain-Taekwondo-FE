@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { isAxiosError } from "axios";
-import { Trophy, Plus, MoreHorizontal, Edit2, Trash2 } from "lucide-react";
+import { Trophy, Plus, MoreHorizontal, Edit2, Trash2, Swords } from "lucide-react";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs } from "@/components/ui/tabs";
@@ -161,6 +161,7 @@ export default function AdminTournamentsPage() {
                   row={row}
                   t={t}
                   onEdit={() => openEdit(row)}
+                  onBrackets={() => router.push(`/admin/tournaments/${row.tournamentId}/brackets`)}
                   onDelete={() => setConfirmDelete(row)}
                 />
               ))}
@@ -212,11 +213,13 @@ function TournamentRow({
   row,
   t,
   onEdit,
+  onBrackets,
   onDelete,
 }: {
   row: TournamentDTO;
   t: (typeof ADMIN_STRINGS)[keyof typeof ADMIN_STRINGS];
   onEdit: () => void;
+  onBrackets: () => void;
   onDelete: () => void;
 }) {
   const status = row.status as TournamentStatus;
@@ -266,6 +269,14 @@ function TournamentRow({
               label={t.actionEdit}
               onClick={() => {
                 onEdit();
+                close();
+              }}
+            />
+            <MenuItem
+              icon={Swords}
+              label={t.actionBrackets}
+              onClick={() => {
+                onBrackets();
                 close();
               }}
             />

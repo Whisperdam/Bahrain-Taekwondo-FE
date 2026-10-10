@@ -5,7 +5,8 @@ export type ParticipantStatus =
   | "REGISTERED"
   | "CONFIRMED"
   | "WITHDRAWN"
-  | "DISQUALIFIED";
+  | "DISQUALIFIED"
+  | "NO_SHOW";
 
 export type CategoryGender = "MALE" | "FEMALE" | "MIXED";
 
