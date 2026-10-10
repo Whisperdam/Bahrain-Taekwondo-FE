@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
-import { Radio } from "lucide-react";
+import { ArrowLeftRight, Radio } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { ErrorBanner } from "@/components/ui/error-banner";
@@ -14,11 +14,13 @@ import { Select } from "@/components/ui/select";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { cn } from "@/lib/utils";
+import { CornerBadge, activeCorner } from "@/components/brackets/corner-badge";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import {
   correctMatchResult,
   setMatchResult,
   startMatch,
+  swapMatchCorners,
   undoMatchResult,
 } from "@/lib/brackets/api";
 import type { BracketStrings } from "@/lib/i18n/bracket-strings";
@@ -102,7 +104,16 @@ export function MatchDialog({ match, t, onClose, onChanged }: MatchDialogProps) 
     onError: fail,
   });
 
-  const busy = start.isPending || save.isPending || undo.isPending;
+  const swap = useMutation({
+    mutationFn: () => swapMatchCorners(match.matchId),
+    onSuccess: () => {
+      toast.success(t.cornersSwapped);
+      onChanged();
+    },
+    onError: fail,
+  });
+
+  const busy = start.isPending || save.isPending || undo.isPending || swap.isPending;
   const canSave = winnerId != null && winnerId !== (decided ? match.winnerId : -1) && !busy;
   const live = match.status === "IN_PROGRESS";
 
@@ -183,24 +194,46 @@ export function MatchDialog({ match, t, onClose, onChanged }: MatchDialogProps) 
             {t.whoWon}
           </div>
           <div className="grid grid-cols-1 gap-2 mb-4">
-            {players.map((p) => (
-              <button
-                key={p.playerId}
-                type="button"
-                onClick={() => setWinnerId(p.playerId)}
-                aria-pressed={winnerId === p.playerId}
-                className={cn(
-                  "text-start rounded-lg border px-4 py-3 transition-colors",
-                  winnerId === p.playerId
-                    ? "border-flag bg-flag/10"
-                    : "border-ink-600 bg-ink-800/60 hover:border-ink-500",
-                )}
-              >
-                <div className="text-sm font-semibold text-white">{t.wins(p.name)}</div>
-                {p.academyName && <div className="text-xs text-slate-500">{p.academyName}</div>}
-              </button>
-            ))}
+            {players.map((p) => {
+              const corner = activeCorner(match, p.playerId === match.player1?.playerId ? 1 : 2);
+              return (
+                <button
+                  key={p.playerId}
+                  type="button"
+                  onClick={() => setWinnerId(p.playerId)}
+                  aria-pressed={winnerId === p.playerId}
+                  className={cn(
+                    "text-start rounded-lg border px-4 py-3 transition-colors",
+                    winnerId === p.playerId
+                      ? "border-flag bg-flag/10"
+                      : "border-ink-600 bg-ink-800/60 hover:border-ink-500",
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-white">{t.wins(p.name)}</div>
+                      {p.academyName && <div className="text-xs text-slate-500">{p.academyName}</div>}
+                    </div>
+                    {corner && <CornerBadge corner={corner} t={t} />}
+                  </div>
+                </button>
+              );
+            })}
           </div>
+          {!decided && match.status === "READY" && match.player1Corner && (
+            <button
+              type="button"
+              onClick={() => {
+                setError(null);
+                swap.mutate();
+              }}
+              disabled={busy}
+              className="mb-4 -mt-2 inline-flex min-h-[36px] items-center gap-1.5 text-xs font-medium text-slate-300 hover:text-white disabled:opacity-60"
+            >
+              <ArrowLeftRight size={14} />
+              {t.swapCorners}
+            </button>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             {players.map((p, i) => (

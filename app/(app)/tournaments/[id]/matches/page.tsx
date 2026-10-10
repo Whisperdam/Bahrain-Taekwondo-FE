@@ -15,6 +15,12 @@ import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MatchDialog } from "@/components/brackets/match-dialog";
 import { roundTitle, type ViewerIdentity } from "@/components/brackets/bracket-view";
+import {
+  CORNER_FILL,
+  CornerBadge,
+  activeCorner,
+  cornerName,
+} from "@/components/brackets/corner-badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useMyPlayer } from "@/hooks/use-my-player";
 import { useNow } from "@/hooks/use-now";
@@ -165,6 +171,17 @@ export default function MatchesPage({ params }: { params: Promise<{ id: string }
       .map(({ m }) => m);
   }, [base, status]);
 
+  // The viewer's own match that is on now or next, so they know what to wear.
+  const myNext = useMemo(() => {
+    if (myPlayerId == null) return null;
+    const mine = all.filter(
+      (m) =>
+        (m.status === "IN_PROGRESS" || m.status === "READY") &&
+        (m.player1?.playerId === myPlayerId || m.player2?.playerId === myPlayerId),
+    );
+    return mine.find((m) => m.status === "IN_PROGRESS") ?? mine[0] ?? null;
+  }, [all, myPlayerId]);
+
   if (!user) return null;
 
   const selected = all.find((m) => m.matchId === selectedId) ?? null;
@@ -183,6 +200,8 @@ export default function MatchesPage({ params }: { params: Promise<{ id: string }
             onClick: () => router.push(`/tournaments/${tournamentId}`),
           }}
         />
+
+        {myNext && myPlayerId != null && <YourNextMatch match={myNext} playerId={myPlayerId} t={t} />}
 
         {/* Filters */}
         <div className="space-y-3 mb-4">
@@ -325,6 +344,45 @@ export default function MatchesPage({ params }: { params: Promise<{ id: string }
   );
 }
 
+/** Tells a player which color to wear in the match they are about to fight (or are fighting). */
+function YourNextMatch({
+  match,
+  playerId,
+  t,
+}: {
+  match: MatchListItem;
+  playerId: number;
+  t: BracketStrings;
+}) {
+  const side = match.player1?.playerId === playerId ? 1 : 2;
+  const corner = activeCorner(match, side);
+  if (!corner) return null;
+  const opponent = side === 1 ? match.player2 : match.player1;
+  const live = match.status === "IN_PROGRESS";
+  const details = [match.matchNumber ? t.matchLabel(match.matchNumber) : null, match.categoryName, match.court]
+    .filter(Boolean)
+    .join(" · ");
+
+  return (
+    <section
+      aria-label={t.yourNextMatch}
+      className="mb-4 flex items-center gap-4 rounded-xl border border-ink-600/70 bg-ink-700 p-3.5"
+    >
+      <div className={cn("shrink-0 min-w-[84px] rounded-lg px-4 py-2.5 text-center", CORNER_FILL[corner])}>
+        <div className="text-[10px] uppercase tracking-[0.14em] opacity-90">{t.yourColor}</div>
+        <div className="text-xl font-bold uppercase leading-tight">{cornerName(corner, t)}</div>
+      </div>
+      <div className="min-w-0">
+        <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">
+          {live ? t.nowPlaying : t.yourNextMatch}
+        </div>
+        {opponent && <div className="text-sm font-semibold text-white truncate">{t.versus(opponent.name)}</div>}
+        <div className="text-xs text-slate-400 truncate">{details}</div>
+      </div>
+    </section>
+  );
+}
+
 function MatchRow({
   match,
   t,
@@ -382,9 +440,9 @@ function MatchRow({
         </span>
       </div>
 
-      <PlayerLine player={match.player1} score={match.player1Score} match={match} viewer={viewer} t={t} />
+      <PlayerLine player={match.player1} side={1} score={match.player1Score} match={match} viewer={viewer} t={t} />
       <div className="h-px bg-ink-600/50 my-1" />
-      <PlayerLine player={match.player2} score={match.player2Score} match={match} viewer={viewer} t={t} />
+      <PlayerLine player={match.player2} side={2} score={match.player2Score} match={match} viewer={viewer} t={t} />
 
       <div className="mt-2.5 flex justify-end">
         <Link
@@ -401,17 +459,20 @@ function MatchRow({
 
 function PlayerLine({
   player,
+  side,
   score,
   match,
   viewer,
   t,
 }: {
   player: BracketPlayer | null;
+  side: 1 | 2;
   score: number | null;
   match: MatchListItem;
   viewer: ViewerIdentity;
   t: BracketStrings;
 }) {
+  const corner = player ? activeCorner(match, side) : null;
   const won = !!player && match.winnerId === player.playerId;
   const lost = match.status === "COMPLETED" && !!player && !won;
   const mine = !!player && viewer.playerId === player.playerId;
@@ -444,6 +505,7 @@ function PlayerLine({
           <span className="text-xs italic text-slate-500">{t.tbd}</span>
         )}
       </div>
+      {corner && <CornerBadge corner={corner} t={t} className="text-[11px]" />}
       {match.status === "COMPLETED" && score != null && (
         <span className="text-sm font-semibold tabular-nums text-slate-200">{score}</span>
       )}

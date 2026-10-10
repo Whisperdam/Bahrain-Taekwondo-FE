@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CornerBadge, activeCorner } from "@/components/brackets/corner-badge";
 import type { BracketStrings } from "@/lib/i18n/bracket-strings";
 import type { Bracket, BracketMatch, BracketPlayer } from "@/types/bracket";
 
@@ -263,6 +264,7 @@ function PlayerRow({
   swap?: SwapControls;
 }) {
   const score = side === 1 ? match.player1Score : match.player2Score;
+  const corner = player ? activeCorner(match, side) : null;
   const decided = match.status === "COMPLETED" && !match.bye;
   const won = !!player && match.winnerId === player.playerId;
   const lost = decided && !!player && !won;
@@ -302,6 +304,7 @@ function PlayerRow({
           </span>
         )}
       </div>
+      {corner && <CornerBadge corner={corner} t={t} />}
       {decided && score != null && (
         <span className="text-xs font-semibold tabular-nums text-slate-200">{score}</span>
       )}

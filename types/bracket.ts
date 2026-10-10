@@ -16,6 +16,8 @@ export interface BracketPlayer {
   academyName: string | null;
 }
 
+export type Corner = "BLUE" | "RED";
+
 export interface BracketMatch {
   matchId: number;
   /** 1 = first round, up to the final. */
@@ -28,6 +30,9 @@ export interface BracketMatch {
   bye: boolean;
   player1: BracketPlayer | null;
   player2: BracketPlayer | null;
+  /** What each player wears. Null until both players are known. */
+  player1Corner: Corner | null;
+  player2Corner: Corner | null;
   winnerId: number | null;
   player1Score: number | null;
   player2Score: number | null;

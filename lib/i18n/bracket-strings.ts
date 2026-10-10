@@ -59,6 +59,15 @@ export const BRACKET_STRINGS = {
     legend: "Highlighted: your player or academy",
     myMatch: "My match",
 
+    // ── Corner colors (blue / red)
+    cornerBlue: "Blue",
+    cornerRed: "Red",
+    yourColor: "Your color",
+    yourNextMatch: "Your next match",
+    versus: (name: string) => `vs ${name}`,
+    swapCorners: "Swap colors",
+    cornersSwapped: "Colors swapped",
+
     // ── Match list
     matches: "Matches",
     matchesSub: "Every match of the tournament in one list.",
@@ -253,6 +262,14 @@ export const BRACKET_STRINGS = {
     yourAcademy: "أكاديميتك",
     legend: "مميّز: لاعبك أو أكاديميتك",
     myMatch: "نزالي",
+
+    cornerBlue: "أزرق",
+    cornerRed: "أحمر",
+    yourColor: "لونك",
+    yourNextMatch: "نزالك القادم",
+    versus: (name: string) => `ضد ${name}`,
+    swapCorners: "تبديل الألوان",
+    cornersSwapped: "تم تبديل الألوان",
 
     matches: "النزالات",
     matchesSub: "كل نزالات البطولة في قائمة واحدة.",

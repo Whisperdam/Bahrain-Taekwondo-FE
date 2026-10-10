@@ -137,6 +137,11 @@ export async function startMatch(matchId: number): Promise<BracketMatch> {
   return res.data;
 }
 
+export async function swapMatchCorners(matchId: number): Promise<BracketMatch> {
+  const res = await apiClient.post<BracketMatch>(`/api/matches/${matchId}/swap-corners`);
+  return res.data;
+}
+
 export async function setMatchResult(
   matchId: number,
   body: MatchResultRequest,
