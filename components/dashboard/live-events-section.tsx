@@ -34,21 +34,32 @@ export function LiveEventsSection({ lang }: LiveEventsSectionProps) {
   if (events.length === 0) return null;
 
   return (
-    <section aria-labelledby="live-h" className="pt-8">
-      <h2
-        id="live-h"
-        className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-flag"
-      >
-        <span className="relative flex h-2 w-2" aria-hidden="true">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flag opacity-60" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-flag" />
-        </span>
-        {t.liveHeading}
-      </h2>
-      <div className="flex flex-col gap-4">
-        {events.map((event) => (
-          <LiveEventCard key={event.tournamentId} event={event} lang={lang} />
-        ))}
+    // A full-width band, so it sits outside the page's centered column. The moving
+    // layers are decoration only; the cards on top of them stay still.
+    <section aria-labelledby="live-h" className="live-band">
+      <div className="live-layer live-glow live-glow-a" aria-hidden="true" />
+      <div className="live-layer live-glow live-glow-b" aria-hidden="true" />
+      <div className="live-layer live-stripes" aria-hidden="true" />
+      <div className="live-layer live-ring" aria-hidden="true" />
+      <div className="live-layer live-ring live-ring-2" aria-hidden="true" />
+      <div className="live-layer live-ring live-ring-3" aria-hidden="true" />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+        <h2
+          id="live-h"
+          className="mb-5 inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.22em] text-white sm:text-base"
+        >
+          <span className="relative flex h-3 w-3" aria-hidden="true">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flag opacity-70" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-flag" />
+          </span>
+          {t.liveHeading}
+        </h2>
+        <div className="flex flex-col gap-5">
+          {events.map((event) => (
+            <LiveEventCard key={event.tournamentId} event={event} lang={lang} />
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -74,7 +85,7 @@ function LiveEventCard({ event, lang }: { event: TournamentDTO; lang: DashLang }
   const day = Math.min(days, Math.max(1, differenceInCalendarDays(new Date(), start) + 1));
 
   return (
-    <article className="rounded-2xl border border-flag/50 bg-ink-700 p-5 sm:p-7 ring-1 ring-flag/20">
+    <article className="live-card w-full rounded-2xl p-5 sm:p-7 lg:max-w-3xl">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <span className="inline-flex items-center gap-1.5 rounded-md bg-flag px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-accent-foreground">
           {t.liveBadge}

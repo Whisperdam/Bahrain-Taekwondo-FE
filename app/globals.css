@@ -52,6 +52,14 @@
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
   --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 0 rgba(255, 255, 255, 0.04) inset;
   --native-color-scheme: dark;
+  /* Live-event band (dashboard): each theme gets its own colors */
+  --live-from: #0a1a33;
+  --live-to: #5a0c1c;
+  --live-glow-a: rgba(230, 30, 55, 0.85);
+  --live-glow-b: rgba(50, 110, 255, 0.6);
+  --live-ring: rgba(255, 255, 255, 0.42);
+  --live-stripe: rgba(255, 255, 255, 0.09);
+  --live-edge: rgba(206, 17, 38, 0.7);
 }
 
 [data-theme="dark-mono"] {
@@ -89,6 +97,13 @@
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.03) inset;
   --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 0 rgba(255, 255, 255, 0.03) inset;
   --native-color-scheme: dark;
+  --live-from: #0b0b0c;
+  --live-to: #2e2e32;
+  --live-glow-a: rgba(255, 255, 255, 0.34);
+  --live-glow-b: rgba(161, 161, 170, 0.45);
+  --live-ring: rgba(255, 255, 255, 0.5);
+  --live-stripe: rgba(255, 255, 255, 0.09);
+  --live-edge: rgba(228, 228, 231, 0.6);
 }
 
 [data-theme="light"] {
@@ -126,6 +141,13 @@
   --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
   --shadow-pop: 0 10px 30px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.06);
   --native-color-scheme: light;
+  --live-from: #fff6f7;
+  --live-to: #ffd3db;
+  --live-glow-a: rgba(206, 17, 38, 0.5);
+  --live-glow-b: rgba(37, 99, 235, 0.38);
+  --live-ring: rgba(206, 17, 38, 0.5);
+  --live-stripe: rgba(206, 17, 38, 0.12);
+  --live-edge: rgba(206, 17, 38, 0.55);
 }
 
 @theme inline {
@@ -299,3 +321,100 @@ select option:hover {
 }
 .sheet-ltr { animation: sheet-in-ltr 0.25s ease-out; }
 .sheet-rtl { animation: sheet-in-rtl 0.25s ease-out; }
+
+/* =================================================================
+   LIVE EVENT BAND (dashboard "Happening now")
+   A full-width band behind the live tournament card. Everything in it
+   moves; the card on top does not. Colors come from the --live-* tokens
+   of the active theme. Only transform and opacity are animated.
+   ================================================================= */
+.live-band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(118deg, var(--live-from), var(--live-to));
+  border-block: 1px solid var(--live-edge);
+}
+.live-band > .live-layer { position: absolute; pointer-events: none; }
+
+/* Slowly drifting colored light */
+.live-glow {
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 50%;
+  will-change: transform;
+}
+.live-glow-a {
+  inset-block-start: -35vmax;
+  inset-inline-start: -20vmax;
+  background: radial-gradient(circle, var(--live-glow-a) 0%, transparent 62%);
+  animation: live-drift-a 16s ease-in-out infinite alternate;
+}
+.live-glow-b {
+  inset-block-end: -40vmax;
+  inset-inline-end: -22vmax;
+  background: radial-gradient(circle, var(--live-glow-b) 0%, transparent 62%);
+  animation: live-drift-b 20s ease-in-out infinite alternate;
+}
+
+/* Speed lines sliding across, fading out toward the top and bottom edges */
+.live-stripes {
+  inset: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+}
+.live-stripes::before {
+  content: "";
+  position: absolute;
+  inset: 0 -120px;
+  background: repeating-linear-gradient(90deg, transparent 0 38px, var(--live-stripe) 38px 40px);
+  transform: skewX(-24deg);
+  animation: live-stripes 3.5s linear infinite;
+}
+
+/* Rings spreading out like a pulse, one after the other */
+.live-ring {
+  inset-block-start: 50%;
+  inset-inline-end: 12%;
+  width: min(120vw, 980px);
+  aspect-ratio: 1;
+  margin-block-start: calc(min(120vw, 980px) / -2);
+  border-radius: 50%;
+  border: 2px solid var(--live-ring);
+  opacity: 0;
+  transform: scale(0.15);
+  animation: live-ring 7.5s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+.live-ring-2 { animation-delay: 2.5s; }
+.live-ring-3 { animation-delay: 5s; }
+
+.live-card {
+  background: var(--color-ink-700);
+  border: 1px solid rgba(var(--flag-rgb), 0.65);
+  box-shadow: 0 28px 70px -28px rgba(var(--flag-rgb), 0.6), 0 2px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+@keyframes live-drift-a {
+  from { transform: translate3d(-6%, -4%, 0) scale(1); }
+  to   { transform: translate3d(22%, 14%, 0) scale(1.18); }
+}
+@keyframes live-drift-b {
+  from { transform: translate3d(6%, 4%, 0) scale(1.1); }
+  to   { transform: translate3d(-24%, -12%, 0) scale(0.92); }
+}
+@keyframes live-stripes {
+  from { transform: skewX(-24deg) translateX(0); }
+  to   { transform: skewX(-24deg) translateX(40px); }
+}
+@keyframes live-ring {
+  0%   { opacity: 0; transform: scale(0.15); }
+  12%  { opacity: 0.9; }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-glow, .live-stripes::before { animation: none; }
+  .live-ring { animation: none; opacity: 0.35; transform: scale(0.5); }
+  .live-ring-2, .live-ring-3 { display: none; }
+}

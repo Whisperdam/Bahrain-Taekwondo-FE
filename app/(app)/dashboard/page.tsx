@@ -54,10 +54,10 @@ export default function DashboardPage() {
     <>
       <TopNav user={user} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        {/* Only present while a tournament is being held; it is the headline then */}
-        <LiveEventsSection lang={lang} />
+      {/* Only present while a tournament is being held: a full-width band, the headline then */}
+      <LiveEventsSection lang={lang} />
 
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <WelcomeBanner firstName={user.firstName} lang={lang} />
 
         <div className="mt-10 flex flex-col gap-14">
