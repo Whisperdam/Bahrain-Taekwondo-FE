@@ -1,29 +1,29 @@
 // Coach-portal-specific types mirroring backend DTOs.
 
-export interface Player {
+/** A player as the coach of their academy sees them. The national ID is already masked by the server. */
+export interface CoachPlayer {
   playerId: number;
   firstName: string;
   lastName: string;
   dateOfBirth: string;
   gender: "MALE" | "FEMALE";
   nationality: string | null;
-  cprNumber: string | null;
+  cprMasked: string | null;
   phone: string | null;
   email: string | null;
   emergencyContactName: string | null;
   emergencyContactPhone: string | null;
   academyId: number;
   academyName: string;
-  beltId: number;
   beltName: string;
   beltColor: string;
   weight: number | null;
   height: number | null;
   bloodType: string | null;
   registrationDate: string | null;
-  status: "ACTIVE" | "PENDING" | "INACTIVE" | "SUSPENDED";
+  status: "ACTIVE" | "PENDING" | "INACTIVE" | "SUSPENDED" | "REJECTED";
+  rejectionReason: string | null;
   rankingPoints: number | null;
-  createdBy?: string;
 }
 
 export interface PlayerCreateRequest {

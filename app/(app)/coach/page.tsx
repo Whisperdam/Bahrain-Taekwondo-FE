@@ -22,14 +22,15 @@ import { useLangStore } from "@/lib/i18n/store";
 import { COACH_STRINGS } from "@/lib/i18n/coach-strings";
 import { getMyAcademies, getPlayersByAcademy } from "@/lib/coach/api";
 import { listMyCoachApplications, listMyAcademyApplications } from "@/lib/applications/api";
-import type { Player } from "@/types/coach";
+import type { CoachPlayer } from "@/types/coach";
 import type { AcademyDTO } from "@/types/dashboard";
 
-const COLOR_BY_STATUS: Record<Player["status"], string> = {
+const COLOR_BY_STATUS: Record<CoachPlayer["status"], string> = {
   ACTIVE: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
   PENDING: "bg-amber-500/10 text-amber-300 border-amber-500/30",
   INACTIVE: "bg-slate-500/10 text-slate-300 border-slate-500/30",
   SUSPENDED: "bg-red-500/10 text-red-300 border-red-500/30",
+  REJECTED: "bg-red-500/10 text-red-300 border-red-500/30",
 };
 
 export default function CoachPortalPage() {
@@ -47,7 +48,7 @@ export default function CoachPortalPage() {
   const academyIds = academiesQ.data?.map((a) => a.academyId) ?? [];
   const playersQs = useQuery({
     queryKey: ["coach", "me", "players", academyIds],
-    queryFn: async (): Promise<Player[]> => {
+    queryFn: async (): Promise<CoachPlayer[]> => {
       const lists = await Promise.all(
         academyIds.map((id) => getPlayersByAcademy(id)),
       );
@@ -265,7 +266,7 @@ function PlayerRow({
   player,
   t,
 }: {
-  player: Player;
+  player: CoachPlayer;
   t: (typeof COACH_STRINGS)[keyof typeof COACH_STRINGS];
 }) {
   const initials = `${player.firstName?.[0] ?? ""}${player.lastName?.[0] ?? ""}`.toUpperCase();

@@ -108,6 +108,7 @@ export const COACH_STRINGS = {
     statusPENDING: "Pending",
     statusINACTIVE: "Inactive",
     statusSUSPENDED: "Suspended",
+    statusREJECTED: "Rejected",
     playerCount: "Players",
 
     colName: "Name",
@@ -217,6 +218,7 @@ export const COACH_STRINGS = {
     statusPENDING: "قيد الانتظار",
     statusINACTIVE: "غير نشط",
     statusSUSPENDED: "موقوف",
+    statusREJECTED: "مرفوض",
     playerCount: "اللاعبون",
 
     colName: "الاسم",

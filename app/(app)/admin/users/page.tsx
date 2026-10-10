@@ -27,6 +27,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/ui/pagination";
 import { DropdownMenu, MenuItem } from "@/components/ui/dropdown-menu";
+import { EditUserDetailsModal } from "@/components/admin/edit-user-details-modal";
 import { ErrorState } from "@/components/ui/error-state";
 import { useAuth } from "@/hooks/use-auth";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -97,6 +98,7 @@ export default function AdminUsersPage() {
   });
 
   const [editRolesUser, setEditRolesUser] = useState<AdminUser | null>(null);
+  const [editDetailsUser, setEditDetailsUser] = useState<AdminUser | null>(null);
   const [confirmSuspend, setConfirmSuspend] = useState<AdminUser | null>(null);
 
   const suspendMutation = useMutation({
@@ -235,6 +237,7 @@ export default function AdminUsersPage() {
                   u={u}
                   lang={lang}
                   onEditRoles={() => setEditRolesUser(u)}
+                  onEditDetails={() => setEditDetailsUser(u)}
                   onToggleSuspend={() => setConfirmSuspend(u)}
                 />
               ))}
@@ -281,6 +284,13 @@ export default function AdminUsersPage() {
         danger={confirmSuspend?.status === "ACTIVE"}
       />
 
+      {/* Keyed so the form starts from the right person each time */}
+      <EditUserDetailsModal
+        key={editDetailsUser?.userId ?? "none-details"}
+        target={editDetailsUser}
+        onClose={() => setEditDetailsUser(null)}
+      />
+
       {/* Keyed so the modal remounts with a fresh selection set when the target changes */}
       <EditRolesModal
         key={editRolesUser?.userId ?? "none"}
@@ -295,11 +305,13 @@ function UserRow({
   u,
   lang,
   onEditRoles,
+  onEditDetails,
   onToggleSuspend,
 }: {
   u: AdminUser;
   lang: "en" | "ar";
   onEditRoles: () => void;
+  onEditDetails: () => void;
   onToggleSuspend: () => void;
 }) {
   const t = ADMIN_STRINGS[lang];
@@ -358,6 +370,14 @@ function UserRow({
               icon={UserIcon}
               label={t.actionView}
               onClick={close}
+            />
+            <MenuItem
+              icon={UserIcon}
+              label={t.actionEditDetails}
+              onClick={() => {
+                onEditDetails();
+                close();
+              }}
             />
             <MenuItem
               icon={Edit2}

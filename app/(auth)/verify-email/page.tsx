@@ -42,6 +42,8 @@ function VerifyEmailContent() {
   const { lang } = useLangStore();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  // set by the link in an email-change message: same check, different wording
+  const isEmailChange = searchParams.get("kind") === "email-change";
 
   const [status, setStatus] = useState<Status>("loading");
   const [message, setMessage] = useState("");
@@ -91,18 +93,26 @@ function VerifyEmailContent() {
               <CheckIcon />
             </div>
             <h1 className="text-2xl font-semibold text-white">
-              {lang === "ar" ? "تم التحقق بنجاح!" : "Email verified!"}
+              {isEmailChange
+                ? lang === "ar" ? "تم تأكيد بريدك الجديد!" : "New email confirmed!"
+                : lang === "ar" ? "تم التحقق بنجاح!" : "Email verified!"}
             </h1>
             <p className="text-sm text-slate-400 mt-2 mb-6 max-w-sm mx-auto leading-relaxed">
-              {lang === "ar"
-                ? "تم تفعيل حسابك. يمكنك الآن تسجيل الدخول."
-                : "Your account is now active. You can sign in."}
+              {isEmailChange
+                ? lang === "ar"
+                  ? "أصبح هذا العنوان بريد حسابك. استخدمه عند تسجيل الدخول."
+                  : "This address is now the email on your account. Use it the next time you sign in."
+                : lang === "ar"
+                  ? "تم تفعيل حسابك. يمكنك الآن تسجيل الدخول."
+                  : "Your account is now active. You can sign in."}
             </p>
             <Link
-              href="/login"
+              href={isEmailChange ? "/profile" : "/login"}
               className="inline-block bg-flag hover:bg-flag-hover text-accent-foreground text-sm font-semibold rounded-lg py-2.5 px-6 transition-colors"
             >
-              {lang === "ar" ? "تسجيل الدخول" : "Sign in"}
+              {isEmailChange
+                ? lang === "ar" ? "الملف الشخصي" : "Go to my profile"
+                : lang === "ar" ? "تسجيل الدخول" : "Sign in"}
             </Link>
           </>
         )}

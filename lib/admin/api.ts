@@ -218,6 +218,15 @@ export async function replaceUserRoles(
   return res.data;
 }
 
+/** Corrects someone's name, username or email; fields left out stay as they are. Not counted against their own limits. */
+export async function updateUserProfile(
+  id: number,
+  body: { firstName?: string; lastName?: string; username?: string; email?: string },
+): Promise<AdminUser> {
+  const res = await apiClient.put<AdminUser>(`/api/admin/users/${id}/profile`, body);
+  return res.data;
+}
+
 // ── Tournaments (admin CRUD; reads use the public endpoint) ────────────────
 export interface ListTournamentsParams {
   status?: TournamentStatus;

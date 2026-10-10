@@ -1,5 +1,5 @@
 import apiClient from "@/lib/api/client";
-import type { Player } from "@/types/coach";
+import type { MyPlayer } from "@/types/profile";
 import type {
   Bracket,
   BracketMatch,
@@ -49,8 +49,8 @@ export async function fetchMatches(
 }
 
 /** The signed-in user's own player profile (404 when they are not a player). */
-export async function fetchMyPlayer(): Promise<Player> {
-  const res = await apiClient.get<Player>("/api/players/me");
+export async function fetchMyPlayer(): Promise<MyPlayer> {
+  const res = await apiClient.get<MyPlayer>("/api/players/me");
   return res.data;
 }
 

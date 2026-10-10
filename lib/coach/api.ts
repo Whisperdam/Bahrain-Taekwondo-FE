@@ -1,7 +1,7 @@
 import apiClient from "@/lib/api/client";
 import type { AcademyDTO } from "@/types/dashboard";
 import type {
-  Player,
+  CoachPlayer,
   PlayerCreateRequest,
   PublicUserSummary,
 } from "@/types/coach";
@@ -12,10 +12,10 @@ export async function getMyAcademies(): Promise<AcademyDTO[]> {
   return res.data;
 }
 
-/** All non-deleted players enrolled in a given academy. */
-export async function getPlayersByAcademy(academyId: number): Promise<Player[]> {
-  const res = await apiClient.get<Player[]>(
-    `/api/players/academy/${academyId}`,
+/** The players of one of the coach's own academies (anyone else's academy is refused). */
+export async function getPlayersByAcademy(academyId: number): Promise<CoachPlayer[]> {
+  const res = await apiClient.get<CoachPlayer[]>(
+    `/api/coach/me/academies/${academyId}/players`,
   );
   return res.data;
 }
@@ -31,7 +31,7 @@ export async function searchUserByEmail(
 }
 
 /** Coach enrolls an existing user as a player in one of their academies. */
-export async function createPlayer(body: PlayerCreateRequest): Promise<Player> {
-  const res = await apiClient.post<Player>("/api/players", body);
+export async function createPlayer(body: PlayerCreateRequest): Promise<CoachPlayer> {
+  const res = await apiClient.post<CoachPlayer>("/api/players", body);
   return res.data;
 }
