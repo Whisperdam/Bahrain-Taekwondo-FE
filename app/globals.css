@@ -99,10 +99,10 @@
   --native-color-scheme: dark;
   --live-from: #0b0b0c;
   --live-to: #2e2e32;
-  --live-glow-a: rgba(255, 255, 255, 0.34);
+  --live-glow-a: rgba(230, 30, 55, 0.5);
   --live-glow-b: rgba(206, 17, 38, 0.6);
   --live-stripe: rgba(235, 45, 65, 0.17);
-  --live-edge: rgba(228, 228, 231, 0.6);
+  --live-edge: rgba(206, 17, 38, 0.85);
   --live-dot: #E61E37;
 }
 
