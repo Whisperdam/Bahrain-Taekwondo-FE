@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useLangStore } from "@/lib/i18n/store";
 import { TopNav } from "@/components/dashboard/top-nav";
+import { LiveEventsSection } from "@/components/dashboard/live-events-section";
 import { WelcomeBanner } from "@/components/dashboard/welcome-banner";
 import { UpgradeSection } from "@/components/dashboard/upgrade-section";
 import { TournamentsSection } from "@/components/dashboard/tournaments-section";
@@ -54,6 +55,9 @@ export default function DashboardPage() {
       <TopNav user={user} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        {/* Only present while a tournament is being held; it is the headline then */}
+        <LiveEventsSection lang={lang} />
+
         <WelcomeBanner firstName={user.firstName} lang={lang} />
 
         <div className="mt-10 flex flex-col gap-14">

@@ -14,6 +14,14 @@ export async function fetchUpcomingTournaments(): Promise<TournamentDTO[]> {
   return res.data.content;
 }
 
+/** Tournaments being held right now (their status moves to ONGOING by itself on the first day). */
+export async function fetchLiveTournaments(): Promise<TournamentDTO[]> {
+  const res = await apiClient.get<PageResponse<TournamentDTO>>(
+    "/api/tournaments?status=ONGOING&page=0&size=5&sort=startDate,asc",
+  );
+  return res.data.content;
+}
+
 export async function fetchTopRankings(season = 2026): Promise<NationalRankingDTO[]> {
   const res = await apiClient.get<PageResponse<NationalRankingDTO>>(
     `/api/rankings?page=0&size=5&sort=rankPosition,asc&season=${season}`,
