@@ -100,8 +100,8 @@ export function LiveEventsSection({ lang }: LiveEventsSectionProps) {
           className="absolute start-4 top-5 inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.22em] text-white sm:start-6 sm:top-6 sm:text-base lg:start-8"
         >
           <span className="relative flex h-3 w-3" aria-hidden="true">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flag opacity-70" />
-            <span className="relative inline-flex h-3 w-3 rounded-full bg-flag" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--live-dot)] opacity-70" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-[var(--live-dot)]" />
           </span>
           {t.liveHeading}
         </h2>

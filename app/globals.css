@@ -59,6 +59,7 @@
   --live-glow-b: rgba(50, 110, 255, 0.6);
   --live-stripe: rgba(255, 255, 255, 0.09);
   --live-edge: rgba(206, 17, 38, 0.7);
+  --live-dot: #CE1126;
 }
 
 [data-theme="dark-mono"] {
@@ -102,6 +103,7 @@
   --live-glow-b: rgba(206, 17, 38, 0.6);
   --live-stripe: rgba(235, 45, 65, 0.17);
   --live-edge: rgba(228, 228, 231, 0.6);
+  --live-dot: #E61E37;
 }
 
 [data-theme="light"] {
@@ -145,6 +147,7 @@
   --live-glow-b: rgba(37, 99, 235, 0.38);
   --live-stripe: rgba(206, 17, 38, 0.12);
   --live-edge: rgba(206, 17, 38, 0.55);
+  --live-dot: #CE1126;
 }
 
 @theme inline {
