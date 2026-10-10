@@ -1,0 +1,116 @@
+// Strings for officials (referees and judges): the list of officials taking
+// part in a tournament, and the directory of all officials with their history.
+
+export const OFFICIAL_STRINGS = {
+  en: {
+    // ── Shared
+    loadFailed: "Couldn't load data. Please try again.",
+    retry: "Retry",
+    cancel: "Cancel",
+    actionFailed: "That didn't work. Please try again.",
+    backToTournaments: "Tournaments",
+    backToAdmin: "Admin",
+    specREFEREE: "Referee",
+    specJUDGE: "Judge",
+    specCOACH_REFEREE: "Coach-referee",
+    levelNATIONAL: "National",
+    levelREGIONAL: "Regional",
+    levelINTERNATIONAL: "International",
+    statusUPCOMING: "Upcoming",
+    statusONGOING: "Ongoing",
+    statusCOMPLETED: "Completed",
+    statusCANCELLED: "Cancelled",
+    inactive: "Inactive",
+    certExpires: (date: string) => `Certified until ${date}`,
+    certExpiredBefore: (date: string) => `Certification ends ${date}, before the tournament`,
+
+    // ── Tournament referee list
+    rosterTitle: "Referees",
+    rosterSub:
+      "Who takes part in this tournament. Roles aren't tracked: referees rotate between roles during the day.",
+    rosterCount: (n: number) => `${n} ${n === 1 ? "official" : "officials"}`,
+    addOfficials: "Add referees",
+    emptyRoster: "No referees added yet",
+    emptyRosterBody: "Add the officials who will work this tournament. You can change the list until it starts.",
+    lockedBanner:
+      "This tournament has started, so the list is locked as the record of who took part.",
+    remove: "Remove",
+    removeTitle: "Remove from tournament",
+    removeBody: (name: string) => `Remove ${name} from this tournament?`,
+    removedToast: "Removed from the tournament",
+    addedToast: (n: number) => `${n} ${n === 1 ? "official" : "officials"} added`,
+
+    // ── Picker
+    pickTitle: "Add referees",
+    search: "Search by name…",
+    nothingToAdd: "Everyone available is already on the list.",
+    noOfficialsYet: "There are no approved officials yet. Approve official applications first.",
+    noMatch: "No one matches that search.",
+    addSelected: (n: number) => (n === 0 ? "Add" : `Add ${n}`),
+    adding: "Adding…",
+
+    // ── Directory
+    directoryTitle: "Officials",
+    directorySub: "Approved referees and judges, and the tournaments each of them took part in.",
+    noOfficials: "No approved officials yet.",
+    tournamentCount: (n: number) => `${n} ${n === 1 ? "tournament" : "tournaments"}`,
+    showTournaments: "Show tournaments",
+    hideTournaments: "Hide tournaments",
+    noTournaments: "Hasn't taken part in a tournament yet.",
+    openTournament: "Open list",
+  },
+  ar: {
+    loadFailed: "تعذّر تحميل البيانات. حاول مرة أخرى.",
+    retry: "إعادة المحاولة",
+    cancel: "إلغاء",
+    actionFailed: "لم تنجح العملية. حاول مرة أخرى.",
+    backToTournaments: "البطولات",
+    backToAdmin: "الإدارة",
+    specREFEREE: "حكم",
+    specJUDGE: "محكّم",
+    specCOACH_REFEREE: "مدرب وحكم",
+    levelNATIONAL: "وطني",
+    levelREGIONAL: "إقليمي",
+    levelINTERNATIONAL: "دولي",
+    statusUPCOMING: "قادمة",
+    statusONGOING: "جارية",
+    statusCOMPLETED: "منتهية",
+    statusCANCELLED: "ملغاة",
+    inactive: "غير نشط",
+    certExpires: (date: string) => `معتمد حتى ${date}`,
+    certExpiredBefore: (date: string) => `تنتهي الشهادة في ${date}، قبل البطولة`,
+
+    rosterTitle: "الحكّام",
+    rosterSub:
+      "المشاركون في هذه البطولة. لا تُسجَّل الأدوار، فالحكّام يتبادلون الأدوار خلال اليوم.",
+    rosterCount: (n: number) => `${n} من الحكّام`,
+    addOfficials: "إضافة حكّام",
+    emptyRoster: "لم تتم إضافة حكّام بعد",
+    emptyRosterBody: "أضف الحكّام الذين سيعملون في هذه البطولة. يمكنك تعديل القائمة حتى بدايتها.",
+    lockedBanner: "بدأت هذه البطولة، لذا القائمة مقفلة وتُحفظ كسجل لمن شارك.",
+    remove: "إزالة",
+    removeTitle: "إزالة من البطولة",
+    removeBody: (name: string) => `إزالة ${name} من هذه البطولة؟`,
+    removedToast: "تمت الإزالة من البطولة",
+    addedToast: (n: number) => `تمت إضافة ${n} من الحكّام`,
+
+    pickTitle: "إضافة حكّام",
+    search: "ابحث بالاسم…",
+    nothingToAdd: "جميع المتاحين موجودون في القائمة بالفعل.",
+    noOfficialsYet: "لا يوجد حكّام معتمدون بعد. اعتمد طلبات الحكّام أولًا.",
+    noMatch: "لا يوجد أحد يطابق هذا البحث.",
+    addSelected: (n: number) => (n === 0 ? "إضافة" : `إضافة ${n}`),
+    adding: "جارٍ الإضافة…",
+
+    directoryTitle: "الحكّام",
+    directorySub: "الحكّام والمحكّمون المعتمدون، والبطولات التي شارك فيها كل منهم.",
+    noOfficials: "لا يوجد حكّام معتمدون بعد.",
+    tournamentCount: (n: number) => `${n} بطولة`,
+    showTournaments: "عرض البطولات",
+    hideTournaments: "إخفاء البطولات",
+    noTournaments: "لم يشارك في أي بطولة بعد.",
+    openTournament: "فتح القائمة",
+  },
+} as const;
+
+export type OfficialStrings = (typeof OFFICIAL_STRINGS)[keyof typeof OFFICIAL_STRINGS];

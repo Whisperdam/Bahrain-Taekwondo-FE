@@ -189,6 +189,11 @@ function Content() {
               label={t.qlAcademies}
               href="/admin/academies"
             />
+            <QuickLink
+              icon={Medal}
+              label={t.qlOfficials}
+              href="/admin/officials"
+            />
           </div>
         </section>
 
