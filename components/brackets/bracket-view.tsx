@@ -1,5 +1,6 @@
 "use client";
 
+import { PlayerLink } from "@/components/shared/person-link";
 import { useId, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -224,6 +225,7 @@ function MatchCard({
         viewer={viewer}
         slot={swap ? (match.matchIndex * 2) : null}
         swap={swap}
+        linkable={!canOpen && !swap}
       />
       <div className="border-t border-ink-600/50" />
       <PlayerRow
@@ -234,6 +236,7 @@ function MatchCard({
         viewer={viewer}
         slot={swap ? (match.matchIndex * 2 + 1) : null}
         swap={swap}
+        linkable={!canOpen && !swap}
       />
     </div>
   );
@@ -254,7 +257,9 @@ function PlayerRow({
   viewer,
   slot,
   swap,
+  linkable,
 }: {
+  linkable: boolean;
   player: BracketPlayer | null;
   side: 1 | 2;
   match: BracketMatch;
@@ -287,7 +292,7 @@ function PlayerRow({
         {player ? (
           <>
             <div className={cn("text-[13px] truncate leading-tight", won ? "text-white font-semibold" : "text-slate-100")}>
-              {player.name}
+              {linkable ? <PlayerLink playerId={player.playerId}>{player.name}</PlayerLink> : player.name}
               {mine && (
                 <span className="ms-1.5 text-[9px] uppercase tracking-[0.12em] text-flag font-semibold">
                   {t.you}

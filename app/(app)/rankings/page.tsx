@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Medal } from "lucide-react";
+import { AcademyLink, PlayerLink } from "@/components/shared/person-link";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
@@ -242,7 +243,9 @@ function RankingRow({ row }: { row: NationalRankingDTO }) {
         <Avatar initials={initials} size={32} />
         <div className="min-w-0">
           <div className="text-white font-medium truncate">
-            {row.playerFirstName} {row.playerLastName}
+            <PlayerLink playerId={row.playerId}>
+              {row.playerFirstName} {row.playerLastName}
+            </PlayerLink>
           </div>
           <div className="text-xs text-slate-500 md:hidden truncate">
             {row.academyName}
@@ -250,7 +253,7 @@ function RankingRow({ row }: { row: NationalRankingDTO }) {
         </div>
       </div>
       <div className="hidden md:block text-slate-300 text-xs truncate">
-        {row.academyName ?? "—"}
+        {row.academyName ? <AcademyLink academyId={row.academyId}>{row.academyName}</AcademyLink> : "—"}
       </div>
       <div className="hidden md:block text-slate-300 text-xs truncate">
         {row.categoryName ?? "—"}

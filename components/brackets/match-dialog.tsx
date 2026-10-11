@@ -1,5 +1,6 @@
 "use client";
 
+import { PlayerLink } from "@/components/shared/person-link";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -176,6 +177,15 @@ export function MatchDialog({ match, t, onClose, onChanged }: MatchDialogProps) 
       }
     >
       {error && <ErrorBanner>{error}</ErrorBanner>}
+
+      <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+        <span>{t.playerPages}</span>
+        {players.map((p) => (
+          <PlayerLink key={p.playerId} playerId={p.playerId} className="text-slate-200">
+            {p.name}
+          </PlayerLink>
+        ))}
+      </div>
 
       {live && (
         <div className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-flag">

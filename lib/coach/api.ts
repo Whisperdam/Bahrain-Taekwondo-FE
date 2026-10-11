@@ -20,6 +20,12 @@ export async function getPlayersByAcademy(academyId: number): Promise<CoachPlaye
   return res.data;
 }
 
+/** One player of an academy the coach owns, with the details only the coach and admins see. */
+export async function getCoachPlayer(playerId: number): Promise<CoachPlayer> {
+  const res = await apiClient.get<CoachPlayer>(`/api/coach/me/players/${playerId}`);
+  return res.data;
+}
+
 /** Look up an existing user by email. Returns 404 if not found. */
 export async function searchUserByEmail(
   email: string,

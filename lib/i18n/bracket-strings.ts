@@ -174,6 +174,7 @@ export const BRACKET_STRINGS = {
         ? `${updated} updated, ${skipped} left as they were (their class is already published)`
         : `${updated} updated`,
     lockedHint: "This class has a published bracket. Unpublish it to change who is in it.",
+    playerPages: "Player pages:",
     idCheckNote:
       "At the weigh-in, check each player's date of birth against their ID. If it doesn't match what is shown here, mark them as no-show instead of placing them.",
     bornOn: (date: string) => `Born ${date}`,
@@ -376,6 +377,7 @@ export const BRACKET_STRINGS = {
         ? `تم تحديث ${updated}، وبقي ${skipped} كما هم (جدول فئتهم منشور)`
         : `تم تحديث ${updated}`,
     lockedHint: "هذه الفئة لها جدول منشور. ألغِ نشره لتغيير من فيه.",
+    playerPages: "صفحات اللاعبين:",
     idCheckNote:
       "عند الوزن، قارن تاريخ ميلاد كل لاعب بهويته. إذا لم يطابق ما هو معروض هنا، فاحتسبه غير حاضر بدل توزيعه.",
     bornOn: (date: string) => `وُلد في ${date}`,

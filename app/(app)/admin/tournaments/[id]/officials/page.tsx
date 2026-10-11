@@ -1,5 +1,6 @@
 "use client";
 
+import { UserLink } from "@/components/shared/person-link";
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -144,7 +145,9 @@ export default function TournamentOfficialsPage({ params }: { params: Promise<{ 
                     <UserRound size={16} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-white truncate">{o.name}</div>
+                    <div className="text-sm font-medium text-white truncate">
+                      <UserLink userId={o.userId}>{o.name}</UserLink>
+                    </div>
                     <OfficialMeta
                       specialization={o.specialization}
                       level={o.certificationLevel}

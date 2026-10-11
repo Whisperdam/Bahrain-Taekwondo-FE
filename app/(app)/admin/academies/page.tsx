@@ -13,6 +13,7 @@ import {
   Ban,
   CircleCheck,
 } from "lucide-react";
+import { AcademyLink } from "@/components/shared/person-link";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs } from "@/components/ui/tabs";
@@ -241,7 +242,9 @@ function AcademyRow({
   return (
     <div className="grid grid-cols-[1fr_44px] md:grid-cols-[2fr_1.6fr_1.8fr_1.4fr_100px_44px] gap-3 items-center px-5 py-3.5 text-sm border-t border-ink-600/60 first:border-0 hover:bg-ink-600/30 transition-colors">
       <div className="min-w-0">
-        <div className="text-white font-medium truncate">{row.academyName}</div>
+        <div className="text-white font-medium truncate">
+          <AcademyLink academyId={row.academyId}>{row.academyName}</AcademyLink>
+        </div>
         <div className="text-xs text-slate-500 md:hidden truncate">
           {row.location}
         </div>

@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format, parseISO } from "date-fns";
 import { Lock, Search, UserX } from "lucide-react";
+import { AcademyLink, PlayerLink } from "@/components/shared/person-link";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { ErrorState } from "@/components/ui/error-state";
@@ -401,9 +402,15 @@ function EntryRow({
     >
       <Checkbox id={`sel-${entry.participantId}`} checked={selected} onChange={onSelect} disabled={locked} />
       <div className="min-w-0">
-        <div className="text-white font-medium truncate">{entry.playerName}</div>
+        <div className="text-white font-medium truncate">
+          <PlayerLink playerId={entry.playerId}>{entry.playerName}</PlayerLink>
+        </div>
         <div className="text-xs text-slate-500 truncate">
-          {[entry.academyName, entry.beltName].filter(Boolean).join(" · ")}
+          {entry.academyName && (
+            <AcademyLink academyId={entry.academyId}>{entry.academyName}</AcademyLink>
+          )}
+          {entry.academyName && entry.beltName ? " · " : ""}
+          {entry.beltName}
         </div>
         <div className="text-xs text-slate-400 tabular-nums">
           {t.bornOn(format(parseISO(entry.dateOfBirth), "PP"))} · {t.ageIs(entry.age)}

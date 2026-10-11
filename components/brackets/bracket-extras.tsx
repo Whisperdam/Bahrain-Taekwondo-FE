@@ -1,5 +1,6 @@
 "use client";
 
+import { PlayerLink } from "@/components/shared/person-link";
 import { Medal, Radio, Trophy } from "lucide-react";
 import type { BracketStrings } from "@/lib/i18n/bracket-strings";
 import type { Bracket, BracketMatch, PodiumEntry } from "@/types/bracket";
@@ -34,7 +35,9 @@ export function Podium({ bracket, t }: { bracket: Bracket; t: BracketStrings }) 
                 <div className="text-[10px] uppercase tracking-[0.14em] text-slate-400">
                   {t[style.label]}
                 </div>
-                <div className="text-sm font-semibold text-white truncate">{entry.player.name}</div>
+                <div className="text-sm font-semibold text-white truncate">
+                  <PlayerLink playerId={entry.player.playerId}>{entry.player.name}</PlayerLink>
+                </div>
                 {entry.player.academyName && (
                   <div className="text-[11px] text-slate-500 truncate">{entry.player.academyName}</div>
                 )}

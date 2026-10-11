@@ -27,13 +27,13 @@ export const OFFICIAL_STRINGS = {
     // ── Tournament referee list
     rosterTitle: "Referees",
     rosterSub:
-      "Who takes part in this tournament. Roles aren't tracked: referees rotate between roles during the day.",
+      "Who takes part in this tournament. Only the officials listed here (and admins) can enter its match results. Roles aren't tracked: referees rotate between roles during the day.",
     rosterCount: (n: number) => `${n} ${n === 1 ? "official" : "officials"}`,
     addOfficials: "Add referees",
     emptyRoster: "No referees added yet",
     emptyRosterBody: "Add the officials who will work this tournament. You can change the list until it starts.",
     lockedBanner:
-      "This tournament has started, so the list is locked as the record of who took part.",
+      "This tournament is over, so the list is locked as the record of who took part.",
     remove: "Remove",
     removeTitle: "Remove from tournament",
     removeBody: (name: string) => `Remove ${name} from this tournament?`,
@@ -58,6 +58,7 @@ export const OFFICIAL_STRINGS = {
     hideTournaments: "Hide tournaments",
     noTournaments: "Hasn't taken part in a tournament yet.",
     openTournament: "Open list",
+    openPage: "Open their page",
   },
   ar: {
     loadFailed: "تعذّر تحميل البيانات. حاول مرة أخرى.",
@@ -82,12 +83,12 @@ export const OFFICIAL_STRINGS = {
 
     rosterTitle: "الحكّام",
     rosterSub:
-      "المشاركون في هذه البطولة. لا تُسجَّل الأدوار، فالحكّام يتبادلون الأدوار خلال اليوم.",
+      "المشاركون في هذه البطولة. المدرجون هنا فقط (والمشرفون) يمكنهم إدخال نتائج مبارياتها. لا تُسجَّل الأدوار، فالحكّام يتبادلون الأدوار خلال اليوم.",
     rosterCount: (n: number) => `${n} من الحكّام`,
     addOfficials: "إضافة حكّام",
     emptyRoster: "لم تتم إضافة حكّام بعد",
     emptyRosterBody: "أضف الحكّام الذين سيعملون في هذه البطولة. يمكنك تعديل القائمة حتى بدايتها.",
-    lockedBanner: "بدأت هذه البطولة، لذا القائمة مقفلة وتُحفظ كسجل لمن شارك.",
+    lockedBanner: "انتهت هذه البطولة، لذا القائمة مقفلة وتُحفظ كسجل لمن شارك.",
     remove: "إزالة",
     removeTitle: "إزالة من البطولة",
     removeBody: (name: string) => `إزالة ${name} من هذه البطولة؟`,
@@ -110,6 +111,7 @@ export const OFFICIAL_STRINGS = {
     hideTournaments: "إخفاء البطولات",
     noTournaments: "لم يشارك في أي بطولة بعد.",
     openTournament: "فتح القائمة",
+    openPage: "فتح صفحته",
   },
 } as const;
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { PlayerLink } from "@/components/shared/person-link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -276,7 +277,9 @@ function PlayerRow({
         <Avatar initials={initials} size={32} />
         <div className="min-w-0">
           <div className="text-white font-medium truncate">
-            {player.firstName} {player.lastName}
+            <PlayerLink playerId={player.playerId}>
+              {player.firstName} {player.lastName}
+            </PlayerLink>
           </div>
           <div className="text-xs text-slate-500 hidden sm:block">
             {t[`gender${player.gender}` as const]}

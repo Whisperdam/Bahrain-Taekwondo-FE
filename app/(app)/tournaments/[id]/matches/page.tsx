@@ -1,5 +1,6 @@
 "use client";
 
+import { PlayerLink } from "@/components/shared/person-link";
 import { use, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -29,6 +30,7 @@ import { useLangStore } from "@/lib/i18n/store";
 import { BRACKET_STRINGS, type BracketStrings } from "@/lib/i18n/bracket-strings";
 import { getMyAcademies } from "@/lib/coach/api";
 import { fetchBrackets, fetchMatches } from "@/lib/brackets/api";
+import { fetchResultsAccess } from "@/lib/people/api";
 import type { BracketPlayer, MatchListItem, MatchStatus } from "@/types/bracket";
 
 type StatusFilter = "ACTIVE" | "WAITING" | "DONE" | "ALL";
@@ -69,8 +71,15 @@ export default function MatchesPage({ params }: { params: Promise<{ id: string }
   const t = BRACKET_STRINGS[lang];
   const now = useNow(1000);
 
-  const isAdmin = user?.roles.includes("ROLE_ADMIN") ?? false;
   const isCoach = user?.roles.includes("ROLE_COACH") ?? false;
+  // Admins, and the officials chosen for this tournament, may enter results; the server decides.
+  const accessQ = useQuery({
+    queryKey: ["tournaments", "detail", tournamentId, "results-access"],
+    queryFn: () => fetchResultsAccess(tournamentId),
+    enabled: Number.isFinite(tournamentId),
+    staleTime: 60 * 1000,
+  });
+  const canEnterResults = accessQ.data?.canEnterResults ?? false;
 
   const [classId, setClassId] = useState("");
   const [court, setCourt] = useState("");
@@ -125,7 +134,7 @@ export default function MatchesPage({ params }: { params: Promise<{ id: string }
     [myPlayerId, academiesQ.data],
   );
   const canFilterMine = viewer.playerId != null || viewer.academyIds.size > 0;
-  const autoMine = !isAdmin && viewer.playerId != null;
+  const autoMine = !canEnterResults && viewer.playerId != null;
   const mineOnly = mineChoice ?? autoMine;
   const status: StatusFilter = statusChoice ?? (mineOnly ? "ALL" : "ACTIVE");
   const setStatus = setStatusChoice;
@@ -277,7 +286,7 @@ export default function MatchesPage({ params }: { params: Promise<{ id: string }
           </div>
 
           <div className="flex items-center justify-between gap-3 text-xs text-slate-500">
-            <span>{isAdmin ? t.tapToEnter : canFilterMine ? t.legend : ""}</span>
+            <span>{canEnterResults ? t.tapToEnter : canFilterMine ? t.legend : ""}</span>
             {matchesQ.data && <span>{t.updated(secondsAgo)}</span>}
           </div>
         </div>
@@ -323,7 +332,7 @@ export default function MatchesPage({ params }: { params: Promise<{ id: string }
               t={t}
               viewer={viewer}
               tournamentId={tournamentId}
-              onOpen={isAdmin && m.player1 && m.player2 ? () => setSelectedId(m.matchId) : undefined}
+              onOpen={canEnterResults && m.player1 && m.player2 ? () => setSelectedId(m.matchId) : undefined}
             />
           ))}
         </div>
@@ -492,7 +501,7 @@ function PlayerLine({
         {player ? (
           <>
             <div className={cn("text-sm truncate", won ? "text-white font-semibold" : "text-slate-100")}>
-              {player.name}
+              <PlayerLink playerId={player.playerId}>{player.name}</PlayerLink>
               {mine && (
                 <span className="ms-1.5 text-[9px] uppercase tracking-[0.12em] text-flag font-semibold">{t.you}</span>
               )}

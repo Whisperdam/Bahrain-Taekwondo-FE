@@ -1,3 +1,4 @@
+import { AcademyLink, PlayerLink } from "@/components/shared/person-link";
 import Link from "next/link";
 import { Trophy, ArrowRight } from "lucide-react";
 import { DASH_STRINGS } from "@/lib/i18n/dashboard-strings";
@@ -93,9 +94,13 @@ export function RankingsSection({ data, isLoading, lang }: RankingsSectionProps)
                 #{r.rankPosition}
               </div>
               <div className="text-white font-medium truncate">
-                {r.playerFirstName} {r.playerLastName}
+                <PlayerLink playerId={r.playerId}>
+                  {r.playerFirstName} {r.playerLastName}
+                </PlayerLink>
               </div>
-              <div className="text-slate-400 truncate hidden sm:block">{r.academyName}</div>
+              <div className="text-slate-400 truncate hidden sm:block">
+                {r.academyName && <AcademyLink academyId={r.academyId}>{r.academyName}</AcademyLink>}
+              </div>
               <div className="text-slate-300 text-xs truncate">{r.categoryName}</div>
               <div className="text-white font-semibold text-right rtl:text-left tabular-nums">
                 {r.totalPoints.toLocaleString()}

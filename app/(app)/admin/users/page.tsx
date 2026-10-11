@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   Users,
 } from "lucide-react";
+import { UserLink } from "@/components/shared/person-link";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { Field } from "@/components/ui/field";
@@ -321,7 +322,9 @@ function UserRow({
       <div className="flex items-center gap-3 min-w-0">
         <Avatar initials={initials} photoUrl={u.profilePhotoUrl} size={36} />
         <div className="min-w-0">
-          <div className="text-white font-medium truncate">{u.fullName}</div>
+          <div className="text-white font-medium truncate">
+            <UserLink userId={u.userId}>{u.fullName}</UserLink>
+          </div>
           <div
             className="text-xs text-slate-500 truncate font-mono md:hidden"
             style={{ direction: "ltr", textAlign: lang === "ar" ? "right" : "left" }}

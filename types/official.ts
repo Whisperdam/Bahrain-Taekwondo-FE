@@ -4,6 +4,8 @@ export type OfficialLevel = "NATIONAL" | "REGIONAL" | "INTERNATIONAL";
 /** An approved official, as listed for admins. */
 export interface OfficialSummary {
   officialId: number;
+  /** Their account, for linking to their page; null if they have none. */
+  userId: number | null;
   name: string;
   specialization: OfficialSpecialization | null;
   certificationLevel: OfficialLevel | null;
@@ -16,6 +18,8 @@ export interface OfficialSummary {
 
 export interface TournamentOfficial {
   officialId: number;
+  /** Their account, for linking to their page; null if they have none. */
+  userId: number | null;
   name: string;
   specialization: OfficialSpecialization | null;
   certificationLevel: OfficialLevel | null;
@@ -30,7 +34,7 @@ export interface TournamentOfficials {
   tournamentName: string;
   status: string;
   startDate: string;
-  /** The list can be changed only while the tournament is still upcoming. */
+  /** The list can be changed until the tournament is over. */
   editable: boolean;
   officials: TournamentOfficial[];
 }

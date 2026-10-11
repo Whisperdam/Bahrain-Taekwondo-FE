@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { isAxiosError } from "axios";
 import { Trophy, Plus, MoreHorizontal, Edit2, Trash2, Swords, UserRound } from "lucide-react";
+import { TournamentLink } from "@/components/shared/person-link";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs } from "@/components/ui/tabs";
@@ -233,7 +234,7 @@ function TournamentRow({
     <div className="grid grid-cols-[1fr_44px] md:grid-cols-[2.2fr_1fr_1.6fr_1.4fr_110px_44px] gap-3 items-center px-5 py-3.5 text-sm border-t border-ink-600/60 first:border-0 hover:bg-ink-600/30 transition-colors">
       <div className="min-w-0">
         <div className="text-white font-medium truncate">
-          {row.tournamentName}
+          <TournamentLink tournamentId={row.tournamentId}>{row.tournamentName}</TournamentLink>
         </div>
         <div className="text-xs text-slate-500 md:hidden truncate">{dates}</div>
       </div>
@@ -357,6 +358,7 @@ function TournamentFormModal({
   const t = ADMIN_STRINGS[lang];
   const ct = CLASSES_STRINGS[lang];
   const qc = useQueryClient();
+  const router = useRouter();
   const selection = useClassSelection(open, editing?.tournamentId ?? null);
   // once it has started the classes are fixed
   const classesLocked = !!editing && editing.status !== "UPCOMING";
@@ -400,12 +402,20 @@ function TournamentFormModal({
         ? updateTournament(editing.tournamentId, body)
         : createTournament(body);
     },
-    onSuccess: () => {
+    onSuccess: (saved) => {
       qc.invalidateQueries({ queryKey: ["admin", "tournaments"] });
       qc.invalidateQueries({ queryKey: ["tournaments"] });
-      toast.success(
-        editing ? t.toastTournamentUpdated : t.toastTournamentCreated,
-      );
+      if (editing) {
+        toast.success(t.toastTournamentUpdated);
+      } else {
+        // Only the officials chosen for a tournament can enter its results, so offer to pick them now.
+        toast.success(t.toastTournamentCreated, {
+          action: {
+            label: t.chooseOfficials,
+            onClick: () => router.push(`/admin/tournaments/${saved.tournamentId}/officials`),
+          },
+        });
+      }
       onClose();
     },
     onError: (err) => {

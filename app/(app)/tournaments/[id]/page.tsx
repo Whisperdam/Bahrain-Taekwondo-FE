@@ -20,6 +20,7 @@ import {
   UserMinus,
   Users,
 } from "lucide-react";
+import { PlayerLink } from "@/components/shared/person-link";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -541,7 +542,9 @@ function ParticipantRow({
         <Avatar initials={initials} size={32} />
         <div className="min-w-0">
           <div className="text-white font-medium truncate">
-            {entry.playerFirstName} {entry.playerLastName}
+            <PlayerLink playerId={entry.playerId}>
+              {entry.playerFirstName} {entry.playerLastName}
+            </PlayerLink>
           </div>
           <div className="text-xs text-slate-500 sm:hidden truncate">
             {entry.academyName}

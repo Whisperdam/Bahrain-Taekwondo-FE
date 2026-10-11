@@ -1,5 +1,6 @@
 "use client";
 
+import { UserLink } from "@/components/shared/person-link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -122,6 +123,13 @@ function OfficialRow({ official, t }: { official: OfficialSummary; t: OfficialSt
 
       {open && (
         <div id={panelId} className="border-t border-ink-600/60 px-4 py-3">
+          {official.userId != null && (
+            <div className="mb-2 text-xs">
+              <UserLink userId={official.userId} className="text-flag">
+                {t.openPage}
+              </UserLink>
+            </div>
+          )}
           {historyQ.isLoading && <Skeleton width="60%" height={16} />}
           {historyQ.isError && (
             <ErrorState message={t.loadFailed} retryLabel={t.retry} onRetry={() => historyQ.refetch()} />

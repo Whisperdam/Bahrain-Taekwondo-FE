@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { isAxiosError } from "axios";
 import { Building2, MapPin, Phone, Mail, CalendarDays, Users } from "lucide-react";
+import { PlayerLink } from "@/components/shared/person-link";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -262,7 +263,9 @@ function PlayerRow({
         <Avatar initials={initials} size={32} />
         <div className="min-w-0">
           <div className="text-white font-medium truncate">
-            {player.firstName} {player.lastName}
+            <PlayerLink playerId={player.playerId}>
+              {player.firstName} {player.lastName}
+            </PlayerLink>
           </div>
           <div className="text-xs text-slate-500 sm:hidden truncate">
             {player.beltName ?? "—"}

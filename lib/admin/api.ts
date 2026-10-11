@@ -149,6 +149,12 @@ export async function listReviewQueue(
   return res.data;
 }
 
+/** The admin view of one account. */
+export async function getAdminUser(id: number): Promise<AdminUser> {
+  const res = await apiClient.get<AdminUser>(`/api/admin/users/${id}`);
+  return res.data;
+}
+
 // ── Player verification (black belt certificate review) ────────────────────
 export async function getPlayerReviewDetail(
   id: number,

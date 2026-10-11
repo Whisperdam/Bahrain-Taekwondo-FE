@@ -24,6 +24,7 @@ import { BRACKET_STRINGS } from "@/lib/i18n/bracket-strings";
 import { getMyAcademies } from "@/lib/coach/api";
 import { getApiErrorMessage } from "@/lib/api/errors";
 import { fetchBracket, swapSlots } from "@/lib/brackets/api";
+import { fetchResultsAccess } from "@/lib/people/api";
 
 const POLL_MS = 8000;
 
@@ -44,6 +45,14 @@ export default function BracketPage({
 
   const isAdmin = user?.roles.includes("ROLE_ADMIN") ?? false;
   const isCoach = user?.roles.includes("ROLE_COACH") ?? false;
+  // Admins, and the officials chosen for this tournament, may enter results; the server decides.
+  const accessQ = useQuery({
+    queryKey: ["tournaments", "detail", tournamentId, "results-access"],
+    queryFn: () => fetchResultsAccess(tournamentId),
+    enabled: Number.isFinite(tournamentId),
+    staleTime: 60 * 1000,
+  });
+  const canEnterResults = accessQ.data?.canEnterResults ?? false;
 
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
@@ -204,7 +213,7 @@ export default function BracketPage({
               bracket={bracket}
               t={t}
               viewer={viewer}
-              onSelectMatch={isAdmin && !isDraft ? (m) => setSelectedMatchId(m.matchId) : undefined}
+              onSelectMatch={canEnterResults && !isDraft ? (m) => setSelectedMatchId(m.matchId) : undefined}
               swap={
                 isAdmin && isDraft
                   ? {
