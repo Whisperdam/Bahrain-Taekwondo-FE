@@ -13,6 +13,7 @@ import type {
   ReviewQueueItem,
   ReviewType,
   PlayerReviewDetail,
+  MembershipEvent,
 } from "@/types/admin";
 import type {
   ApplicationStatus,
@@ -147,6 +148,27 @@ export async function listReviewQueue(
     { params },
   );
   return res.data;
+}
+
+/** Who joined, left or was released from which academy, for a player. */
+export async function getPlayerMembershipHistory(playerId: number): Promise<MembershipEvent[]> {
+  const res = await apiClient.get<MembershipEvent[]>(`/api/admin/players/${playerId}/membership-history`);
+  return res.data;
+}
+
+export async function getCoachMembershipHistory(userId: number): Promise<MembershipEvent[]> {
+  const res = await apiClient.get<MembershipEvent[]>(`/api/admin/users/${userId}/coach/membership-history`);
+  return res.data;
+}
+
+/** An admin releases a player from their academy. */
+export async function adminReleasePlayer(playerId: number): Promise<void> {
+  await apiClient.post(`/api/admin/players/${playerId}/release`);
+}
+
+/** An admin releases the coach behind this account from the academy they belong to. */
+export async function adminReleaseCoach(userId: number): Promise<void> {
+  await apiClient.post(`/api/admin/users/${userId}/coach/release`);
 }
 
 /** The admin view of one account. */

@@ -2,7 +2,8 @@
 
 import { use } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { format } from "date-fns";
 import { Lock, UserRound } from "lucide-react";
@@ -22,7 +23,9 @@ import { useLangStore } from "@/lib/i18n/store";
 import { PEOPLE_STRINGS } from "@/lib/i18n/people-strings";
 import { ADMIN_STRINGS } from "@/lib/i18n/admin-strings";
 import { fetchUserProfile } from "@/lib/people/api";
-import { getAdminUser } from "@/lib/admin/api";
+import { adminReleaseCoach, getAdminUser, getCoachMembershipHistory } from "@/lib/admin/api";
+import { getApiErrorMessage } from "@/lib/api/errors";
+import { MembershipHistory } from "@/components/admin/membership-history";
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
@@ -58,6 +61,21 @@ export default function UserPage({ params }: { params: Promise<{ id: string }> }
     queryKey: ["users", "account", id],
     queryFn: () => getAdminUser(id),
     enabled: !!profile?.canViewPrivate,
+  });
+
+  const qc = useQueryClient();
+  const historyQ = useQuery({
+    queryKey: ["users", "coach-history", id],
+    queryFn: () => getCoachMembershipHistory(id),
+    enabled: !!profile?.canViewPrivate && !!profile?.coach,
+  });
+  const releaseCoach = useMutation({
+    mutationFn: () => adminReleaseCoach(id),
+    onSuccess: () => {
+      toast.success(t.coachReleasedAdmin);
+      qc.invalidateQueries({ queryKey: ["users", "coach-history", id] });
+    },
+    onError: (err) => toast.error(getApiErrorMessage(err, t.releaseFailed)),
   });
 
   if (!user) return null;
@@ -154,6 +172,17 @@ export default function UserPage({ params }: { params: Promise<{ id: string }> }
                     {t.viewPlayer}
                   </SecondaryButton>
                 </section>
+              )}
+
+              {profile.canViewPrivate && profile.coach && (
+                <>
+                  <div>
+                    <SecondaryButton type="button" onClick={() => releaseCoach.mutate()} disabled={releaseCoach.isPending}>
+                      {t.releaseCoachAdmin}
+                    </SecondaryButton>
+                  </div>
+                  <MembershipHistory events={historyQ.data} loading={historyQ.isLoading} failed={historyQ.isError} t={t} />
+                </>
               )}
 
               {profile.canViewPrivate && (

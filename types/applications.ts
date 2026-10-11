@@ -35,7 +35,7 @@ export type DocumentOwnerType =
   | "USER";
 
 export type OfficialCertLevel = "NATIONAL" | "REGIONAL" | "INTERNATIONAL";
-export type OfficialSpecialization = "REFEREE" | "JUDGE" | "COACH_REFEREE";
+export type OfficialSpecialization = "REFEREE" | "JUDGE" | "COACH_REFEREE" | "OFFICIAL";
 
 // ── Coach ───────────────────────────────────────────────────────────────────
 export interface CoachApplicationRequest {
@@ -78,6 +78,8 @@ export interface AcademyApplicationRequest {
   proposedEmail?: string;
   proposedEstablishedDate?: string;
   notes?: string;
+  /** Set when opening a branch of one of your own academies. */
+  branchOfAcademyId?: number;
 }
 
 // ── Document upload ─────────────────────────────────────────────────────────
@@ -127,6 +129,8 @@ export interface AcademyApplicationSummary {
   applicantCoachName: string;
   proposedName: string;
   proposedLocation: string | null;
+  branchOfAcademyId?: number | null;
+  branchOfAcademyName?: string | null;
   status: ApplicationStatus;
   submittedAt: string;
   reviewedAt: string | null;
@@ -240,6 +244,8 @@ export interface AcademyApplicationDetail extends ApplicationDetailBase {
   applicantCoachEmail: string | null;
 
   proposedName: string;
+  branchOfAcademyId?: number | null;
+  branchOfAcademyName?: string | null;
   proposedLocation: string | null;
   proposedPhone: string | null;
   proposedEmail: string | null;

@@ -1,8 +1,9 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { format, parseISO } from "date-fns";
 import { Lock, Medal, UserRound } from "lucide-react";
@@ -23,8 +24,11 @@ import { useLangStore } from "@/lib/i18n/store";
 import { PEOPLE_STRINGS, type PeopleStrings } from "@/lib/i18n/people-strings";
 import { ADMIN_STRINGS } from "@/lib/i18n/admin-strings";
 import { fetchPlayerProfile } from "@/lib/people/api";
-import { getPlayerReviewDetail } from "@/lib/admin/api";
-import { getCoachPlayer } from "@/lib/coach/api";
+import { adminReleasePlayer, getPlayerMembershipHistory, getPlayerReviewDetail } from "@/lib/admin/api";
+import { getCoachPlayer, getMyAcademies, releasePlayer } from "@/lib/coach/api";
+import { getApiErrorMessage } from "@/lib/api/errors";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
+import { MembershipHistory } from "@/components/admin/membership-history";
 import type { DocumentSummary } from "@/types/applications";
 
 /** The private fields, whichever audience's view they came from. */
@@ -44,6 +48,8 @@ interface PrivateView {
   registrationDate: string | null;
   account: string | null;
   pendingReview: boolean;
+  academyId: number | null;
+  name: string;
   documents: DocumentSummary[] | null;
 }
 
@@ -108,8 +114,10 @@ export default function PlayerPage({ params }: { params: Promise<{ id: string }>
               </div>
               <div>
                 <InfoRow label={t.academy}>
-                  {profile.academyId != null && profile.academyName && (
+                  {profile.academyId != null && profile.academyName ? (
                     <AcademyLink academyId={profile.academyId}>{profile.academyName}</AcademyLink>
+                  ) : (
+                    <span className="text-slate-300">{t.noAcademy}</span>
                   )}
                 </InfoRow>
                 <InfoRow label={t.belt}>{profile.beltName}</InfoRow>
@@ -180,6 +188,34 @@ function PrivateDetails({
 }) {
   const adminT = ADMIN_STRINGS[lang];
   const router = useRouter();
+  const qc = useQueryClient();
+  const [confirmRelease, setConfirmRelease] = useState(false);
+
+  // a coach may release only the players of academies they own
+  const myAcademiesQ = useQuery({
+    queryKey: ["coach", "me", "academies"],
+    queryFn: getMyAcademies,
+    enabled: !isAdmin,
+  });
+  const historyQ = useQuery({
+    queryKey: ["players", "history", playerId],
+    queryFn: () => getPlayerMembershipHistory(playerId),
+    enabled: isAdmin,
+  });
+  const release = useMutation({
+    mutationFn: () => (isAdmin ? adminReleasePlayer(playerId) : releasePlayer(playerId)),
+    onSuccess: () => {
+      toast.success(t.released);
+      setConfirmRelease(false);
+      qc.invalidateQueries({ queryKey: ["players"] });
+      qc.invalidateQueries({ queryKey: ["coach", "me"] });
+    },
+    onError: (err) => {
+      // the server says why, for example that the player is still entered in a tournament
+      toast.error(getApiErrorMessage(err, t.releaseFailed));
+      setConfirmRelease(false);
+    },
+  });
 
   // Admins read the admin view (full ID, documents); a coach reads the coach view (ID masked).
   // The server checks again, so asking for the wrong one just fails.
@@ -203,6 +239,8 @@ function PrivateDetails({
           registrationDate: d.registrationDate,
           account: d.username ? `${d.username}${d.userEmail ? ` · ${d.userEmail}` : ""}` : null,
           pendingReview: d.reviewStatus === "PENDING",
+          academyId: d.academyId,
+          name: `${d.firstName} ${d.lastName}`,
           documents: d.documents,
         };
       }
@@ -222,12 +260,17 @@ function PrivateDetails({
         registrationDate: c.registrationDate,
         account: null,
         pendingReview: false,
+        academyId: c.academyId,
+        name: `${c.firstName} ${c.lastName}`,
         documents: null,
       };
     },
   });
 
   const d = q.data;
+  const canRelease =
+    !!d && d.status === "ACTIVE" && d.academyId != null &&
+    (isAdmin || (myAcademiesQ.data ?? []).some((a) => a.academyId === d.academyId && a.role === "OWNER"));
   const birthYear = d?.dateOfBirth ? Number(d.dateOfBirth.slice(0, 4)) : null;
 
   return (
@@ -296,6 +339,13 @@ function PrivateDetails({
             </div>
           </div>
         )}
+        {canRelease && (
+          <div className="mt-4">
+            <SecondaryButton type="button" onClick={() => setConfirmRelease(true)}>
+              {t.releaseAction}
+            </SecondaryButton>
+          </div>
+        )}
         {d?.pendingReview && (
           <div className="mt-4">
             <SecondaryButton type="button" onClick={() => router.push(`/admin/players/${playerId}`)}>
@@ -306,6 +356,22 @@ function PrivateDetails({
       </section>
 
       {isAdmin && d?.documents && <DocumentsCard documents={d.documents} t={adminT} />}
+      {isAdmin && (
+        <MembershipHistory events={historyQ.data} loading={historyQ.isLoading} failed={historyQ.isError} t={t} />
+      )}
+
+      <ConfirmModal
+        open={confirmRelease}
+        onClose={() => setConfirmRelease(false)}
+        onConfirm={() => release.mutate()}
+        title={t.releaseTitle}
+        body={d ? t.releaseBody(d.name) : undefined}
+        confirmLabel={t.releaseAction}
+        cancelLabel={t.cancel}
+        loading={release.isPending}
+        loadingLabel={t.working}
+        danger
+      />
     </>
   );
 }

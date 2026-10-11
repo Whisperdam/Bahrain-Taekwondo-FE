@@ -24,8 +24,9 @@ import { COACH_STRINGS } from "@/lib/i18n/coach-strings";
 import {
   getMyAcademies,
   searchUserByEmail,
-  createPlayer,
+  createPlayer,  claimPlayer,
 } from "@/lib/coach/api";
+import { getApiErrorMessage } from "@/lib/api/errors";
 import { uploadDocument } from "@/lib/applications/api";
 import { uploadProfilePhotoFor } from "@/lib/profile/api";
 import { BELTS, type PublicUserSummary } from "@/types/coach";
@@ -141,12 +142,29 @@ export default function AddPlayerPage() {
     setTimeout(() => setLinkCopied(false), 2000);
   }
 
+  // Players can only be added to academies this coach owns or may edit.
+  const editableAcademies = (academiesQ.data ?? []).filter((a) => a.access === "EDIT");
+
+  const [claimAcademy, setClaimAcademy] = useState("");
+  const claimMutation = useMutation({
+    mutationFn: () =>
+      claimPlayer(
+        Number(claimAcademy || editableAcademies[0]?.academyId),
+        selected!.userId,
+      ),
+    onSuccess: () => {
+      setDone(true);
+      toast.success(t.claimed(selected?.fullName ?? ""));
+    },
+    onError: (err) => toast.error(getApiErrorMessage(err, t.addPlayerFailed)),
+  });
+
   // ── Submit ─────────────────────────────────────────────────────────────
   const submitMutation = useMutation({
     mutationFn: async () => {
       if (!selected) throw new Error("No user selected");
       const academyIdNum = Number(
-        form.academyId || academiesQ.data?.[0]?.academyId,
+        form.academyId || editableAcademies[0]?.academyId,
       );
       const player = await createPlayer({
         userId: selected.userId,
@@ -249,7 +267,7 @@ export default function AddPlayerPage() {
     );
   }
 
-  const academies = academiesQ.data ?? [];
+  const academies = editableAcademies;
   // We don't store a fallback in form.academyId — instead we resolve it at
   // render time so academies-loading doesn't cause a render-phase setState.
   const effectiveAcademyId =
@@ -295,6 +313,44 @@ export default function AddPlayerPage() {
                 t={t}
                 lang={lang}
               />
+            )}
+
+            {steps[step]?.id === "find" && selected?.playerState === "RELEASED" && (
+              <div className="mt-4 rounded-lg border border-emerald-500/40 bg-emerald-500/5 p-4">
+                <div className="text-sm font-semibold text-white">{t.freeToJoinTitle}</div>
+                <p className="text-xs text-slate-300 mt-1 leading-relaxed">{t.freeToJoinBody(selected.fullName)}</p>
+                {editableAcademies.length > 1 && (
+                  <div className="mt-3 max-w-xs">
+                    <Select
+                      value={claimAcademy || String(editableAcademies[0].academyId)}
+                      onChange={(e) => setClaimAcademy(e.target.value)}
+                      aria-label={t.academy}
+                    >
+                      {editableAcademies.map((a) => (
+                        <option key={a.academyId} value={a.academyId}>
+                          {a.academyName}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+                )}
+                <div className="mt-3">
+                  <PrimaryButton
+                    type="button"
+                    onClick={() => claimMutation.mutate()}
+                    loading={claimMutation.isPending}
+                    loadingText={t.claiming}
+                    disabled={editableAcademies.length === 0}
+                    className="w-auto px-4"
+                  >
+                    {t.claimPlayer}
+                  </PrimaryButton>
+                </div>
+              </div>
+            )}
+
+            {steps[step]?.id === "find" && selected?.playerState === "IN_ACADEMY" && (
+              <p className="mt-3 text-xs text-amber-300">{t.inAcademyNote}</p>
             )}
 
             {steps[step]?.id === "details" && (

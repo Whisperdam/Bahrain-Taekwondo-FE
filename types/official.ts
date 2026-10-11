@@ -1,4 +1,4 @@
-export type OfficialSpecialization = "REFEREE" | "JUDGE" | "COACH_REFEREE";
+export type OfficialSpecialization = "REFEREE" | "JUDGE" | "COACH_REFEREE" | "OFFICIAL";
 export type OfficialLevel = "NATIONAL" | "REGIONAL" | "INTERNATIONAL";
 
 /** An approved official, as listed for admins. */

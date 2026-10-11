@@ -120,3 +120,15 @@ export interface PlayerReviewDetail {
   userEmail: string | null;
   documents: DocumentSummary[];
 }
+
+/** One line of the history of who belonged to which academy. */
+export interface MembershipEvent {
+  eventId: number;
+  /** PLAYER_RELEASED, PLAYER_CLAIMED, COACH_INVITED, COACH_JOINED, COACH_RELEASED and so on. */
+  kind: string;
+  academyId: number | null;
+  academyName: string | null;
+  actorName: string | null;
+  detail: string | null;
+  createdAt: string;
+}

@@ -21,10 +21,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
 import { useLangStore } from "@/lib/i18n/store";
 import { COACH_STRINGS } from "@/lib/i18n/coach-strings";
-import { getMyAcademies, getPlayersByAcademy } from "@/lib/coach/api";
+import { getMyAcademies, getMyInvitations, getPlayersByAcademy } from "@/lib/coach/api";
 import { listMyCoachApplications, listMyAcademyApplications } from "@/lib/applications/api";
-import type { CoachPlayer } from "@/types/coach";
-import type { AcademyDTO } from "@/types/dashboard";
+import type { CoachAcademy, CoachPlayer } from "@/types/coach";
 
 const COLOR_BY_STATUS: Record<CoachPlayer["status"], string> = {
   ACTIVE: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
@@ -46,7 +45,9 @@ export default function CoachPortalPage() {
   });
 
   // Once we have academies, fan out to fetch players from each in parallel.
-  const academyIds = academiesQ.data?.map((a) => a.academyId) ?? [];
+  // only the academies whose players this coach may see (a coach listed without access cannot)
+  const academyIds =
+    academiesQ.data?.filter((a) => a.access !== "NONE").map((a) => a.academyId) ?? [];
   const playersQs = useQuery({
     queryKey: ["coach", "me", "players", academyIds],
     queryFn: async (): Promise<CoachPlayer[]> => {
@@ -56,6 +57,11 @@ export default function CoachPortalPage() {
       return lists.flat();
     },
     enabled: academyIds.length > 0,
+  });
+
+  const invitationsQ = useQuery({
+    queryKey: ["coach", "me", "invitations"],
+    queryFn: getMyInvitations,
   });
 
   const pendingAppsQ = useQuery({
@@ -85,6 +91,19 @@ export default function CoachPortalPage() {
           title={t.coachPortalTitle}
           subtitle={t.coachPortalSub}
         />
+
+        {(invitationsQ.data?.length ?? 0) > 0 && (
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-flag/40 bg-flag/10 px-4 py-3">
+            <span className="text-sm text-white">{t.invitationsWaiting(invitationsQ.data!.length)}</span>
+            <PrimaryButton
+              type="button"
+              onClick={() => router.push("/coach/invitations")}
+              className="!py-1.5 !px-3 text-xs w-auto"
+            >
+              {t.viewInvitations}
+            </PrimaryButton>
+          </div>
+        )}
 
         <div className="text-[11px] uppercase tracking-[0.18em] text-slate-500 mb-3">
           {t.myCoaching}
@@ -173,7 +192,21 @@ export default function CoachPortalPage() {
 
         {/* Academies section */}
         <section id="my-academies" className="mt-10">
-          <SectionHeader title={t.myAcademies} />
+          <SectionHeader
+            title={t.myAcademies}
+            action={
+              academies.length > 0 ? (
+                <PrimaryButton
+                  type="button"
+                  onClick={() => router.push("/apply/academy")}
+                  className="!py-2 !px-3.5 text-xs w-auto"
+                >
+                  <Plus size={14} />
+                  {t.addAcademy}
+                </PrimaryButton>
+              ) : undefined
+            }
+          />
           {academiesQ.isLoading ? (
             <AcademiesSkeleton />
           ) : academies.length === 0 ? (
@@ -194,7 +227,12 @@ export default function CoachPortalPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {academies.map((a) => (
-                <AcademyCard key={a.academyId} academy={a} t={t} />
+                <AcademyCard
+                  key={a.academyId}
+                  academy={a}
+                  t={t}
+                  onManage={() => router.push(`/coach/academies/${a.academyId}`)}
+                />
               ))}
             </div>
           )}
@@ -304,9 +342,11 @@ function PlayerRow({
 function AcademyCard({
   academy,
   t,
+  onManage,
 }: {
-  academy: AcademyDTO;
+  academy: CoachAcademy;
   t: (typeof COACH_STRINGS)[keyof typeof COACH_STRINGS];
+  onManage: () => void;
 }) {
   return (
     <div className="card bg-ink-700 border border-ink-600/70 rounded-xl p-5 flex items-start gap-4">
@@ -318,6 +358,24 @@ function AcademyCard({
           {academy.academyName}
         </div>
         <div className="text-xs text-slate-400 mt-0.5">{academy.location}</div>
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          <span className="text-[10px] uppercase tracking-[0.12em] font-medium border border-flag/40 bg-flag/10 text-flag rounded px-1.5 py-0.5">
+            {academy.role === "OWNER" ? t.roleOwner : t.roleCoach}
+          </span>
+          {academy.role === "COACH" && (
+            <span className="text-[10px] uppercase tracking-[0.12em] font-medium border border-ink-500 text-slate-300 rounded px-1.5 py-0.5">
+              {t[`access${academy.access}` as const]}
+            </span>
+          )}
+          {academy.parentAcademyName && (
+            <span className="text-[11px] text-slate-400">{t.branchOf(academy.parentAcademyName)}</span>
+          )}
+        </div>
+        <div className="mt-2 text-xs text-slate-500">
+          {academy.access !== "NONE" && <>{t.playersCount(academy.playerCount)} · </>}
+          {t.coachesCount(academy.coachCount)}
+        </div>
+        {academy.access === "NONE" && <p className="mt-1 text-[11px] text-amber-300">{t.noAccessNote}</p>}
         {academy.establishedDate && (
           <div className="mt-2 text-xs text-slate-500">
             {t.establishedDate}:{" "}
@@ -326,6 +384,18 @@ function AcademyCard({
             </span>
           </div>
         )}
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={onManage}
+            className="text-sm font-semibold text-flag hover:text-flag-hover inline-flex items-center gap-1.5"
+          >
+            <span>{t.manageAcademy}</span>
+            <span className="rtl:rotate-180 inline-flex">
+              <ArrowRight size={14} />
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );

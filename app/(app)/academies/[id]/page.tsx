@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { isAxiosError } from "axios";
 import { Building2, MapPin, Phone, Mail, CalendarDays, Users } from "lucide-react";
-import { PlayerLink } from "@/components/shared/person-link";
+import { AcademyLink, PlayerLink, UserLink } from "@/components/shared/person-link";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -18,7 +18,12 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { useAuth } from "@/hooks/use-auth";
 import { useLangStore } from "@/lib/i18n/store";
 import { BROWSE_STRINGS } from "@/lib/i18n/browse-strings";
-import { fetchAcademy, fetchAcademyPlayers } from "@/lib/dashboard/api";
+import {
+  fetchAcademy,
+  fetchAcademyBranches,
+  fetchAcademyPlayers,
+  fetchAcademyStaff,
+} from "@/lib/dashboard/api";
 import type { AcademyPlayerDTO } from "@/types/dashboard";
 
 export default function AcademyDetailsPage({
@@ -40,6 +45,17 @@ export default function AcademyDetailsPage({
     retry: (count, err) =>
       // A 404 is a definitive answer — don't retry it
       !(isAxiosError(err) && err.response?.status === 404) && count < 1,
+  });
+
+  const branchesQ = useQuery({
+    queryKey: ["academies", "detail", id, "branches"],
+    queryFn: () => fetchAcademyBranches(id),
+    enabled: Number.isFinite(id) && !!academyQ.data,
+  });
+  const staffQ = useQuery({
+    queryKey: ["academies", "detail", id, "coaches"],
+    queryFn: () => fetchAcademyStaff(id),
+    enabled: Number.isFinite(id) && !!academyQ.data,
   });
 
   const playersQ = useQuery({
@@ -110,6 +126,14 @@ export default function AcademyDetailsPage({
                 <div className="text-base font-semibold text-white">
                   {academy.academyName}
                 </div>
+                {academy.parentAcademyId != null && academy.parentAcademyName && (
+                  <div className="text-xs text-slate-400 mt-1">
+                    {t.branchOfLabel}{" "}
+                    <AcademyLink academyId={academy.parentAcademyId} className="text-flag">
+                      {academy.parentAcademyName}
+                    </AcademyLink>
+                  </div>
+                )}
                 {academy.location && (
                   <div className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
                     <MapPin size={12} />
@@ -164,6 +188,42 @@ export default function AcademyDetailsPage({
                   </p>
                 )}
               </section>
+
+              {(staffQ.data?.length ?? 0) > 0 && (
+                <section className="card bg-ink-700 border border-ink-600/70 rounded-xl p-6">
+                  <SectionHeader title={t.academyCoaches} />
+                  <ul className="space-y-2">
+                    {staffQ.data!.map((c) => (
+                      <li key={c.userId} className="flex items-center gap-2 text-sm">
+                        <UserLink userId={c.userId} className="text-white font-medium">
+                          {c.name}
+                        </UserLink>
+                        {c.role === "OWNER" && (
+                          <span className="text-[10px] uppercase tracking-[0.12em] font-medium border border-flag/40 bg-flag/10 text-flag rounded px-1.5 py-0.5">
+                            {t.ownerBadge}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {(branchesQ.data?.length ?? 0) > 0 && (
+                <section className="card bg-ink-700 border border-ink-600/70 rounded-xl p-6">
+                  <SectionHeader title={t.branchesTitle} />
+                  <ul className="space-y-2">
+                    {branchesQ.data!.map((b) => (
+                      <li key={b.academyId} className="text-sm">
+                        <AcademyLink academyId={b.academyId} className="text-white font-medium">
+                          {b.academyName}
+                        </AcademyLink>
+                        {b.location && <span className="ms-2 text-xs text-slate-500">{b.location}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
 
               <section className="bg-ink-700 border border-ink-600/70 rounded-xl overflow-hidden">
                 <div className="px-6 pt-6 pb-1">

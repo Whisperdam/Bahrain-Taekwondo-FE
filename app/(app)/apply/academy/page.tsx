@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Building2, GitBranch } from "lucide-react";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -21,6 +21,10 @@ import {
   submitAcademyApplication,
   uploadDocument,
 } from "@/lib/applications/api";
+import { getMyAcademies } from "@/lib/coach/api";
+import { getApiErrorMessage } from "@/lib/api/errors";
+import { Select } from "@/components/ui/select";
+import type { CoachAcademy } from "@/types/coach";
 import type { AcademyApplicationRequest } from "@/types/applications";
 
 interface AcademyFormState {
@@ -63,6 +67,39 @@ export default function ApplyAcademyPage() {
 
   const isCoach = user?.roles.includes("ROLE_COACH") ?? false;
 
+  // A coach with an academy chooses between a new academy and a branch of one of theirs.
+  // Both send the same application; a branch just starts filled in and remembers its root.
+  const academiesQ = useQuery({
+    queryKey: ["coach", "me", "academies"],
+    queryFn: getMyAcademies,
+    enabled: isCoach,
+  });
+  const owned = (academiesQ.data ?? []).filter((a) => a.role === "OWNER");
+  const memberOf = (academiesQ.data ?? []).find((a) => a.role === "COACH");
+  const [mode, setMode] = useState<"choose" | "new" | "branch">("choose");
+  const [branchSourceId, setBranchSourceId] = useState<number | null>(null);
+  const branchSource: CoachAcademy | undefined =
+    owned.find((a) => a.academyId === (branchSourceId ?? owned[0]?.academyId)) ?? owned[0];
+
+  function startBranch() {
+    if (!branchSource) return;
+    setForm((f) => ({
+      ...f,
+      proposedName: branchSource.suggestedBranchName ?? `${branchSource.academyName} 2`,
+      proposedLocation: branchSource.location ?? "",
+      proposedPhone: branchSource.phone ?? "",
+      proposedEmail: branchSource.email ?? "",
+      proposedEstablishedDate: branchSource.establishedDate ?? "",
+    }));
+    setBranchSourceId(branchSource.academyId);
+    setMode("branch");
+  }
+  function startNew() {
+    setMode("new");
+  }
+  // no academy yet: nothing to choose, it is simply a new academy
+  const effectiveMode = owned.length === 0 && !academiesQ.isLoading ? "new" : mode;
+
   function validate(): boolean {
     const e: Record<string, string> = {};
     if (!form.proposedName.trim()) e.proposedName = "Required";
@@ -87,6 +124,7 @@ export default function ApplyAcademyPage() {
         proposedEmail: form.proposedEmail || undefined,
         proposedEstablishedDate: form.proposedEstablishedDate || undefined,
         notes: form.notes || undefined,
+        branchOfAcademyId: effectiveMode === "branch" ? branchSource?.academyId : undefined,
       };
       const created = await submitAcademyApplication(payload);
       const uploads: Promise<unknown>[] = [];
@@ -121,7 +159,7 @@ export default function ApplyAcademyPage() {
       return created;
     },
     onSuccess: () => setSubmitted(true),
-    onError: () => toast.error(t.submitFailed),
+    onError: (err) => toast.error(getApiErrorMessage(err, t.submitFailed)),
   });
 
   function onSubmit(e: React.FormEvent) {
@@ -170,6 +208,78 @@ export default function ApplyAcademyPage() {
     );
   }
 
+  if (academiesQ.isLoading) return null;
+
+  if (memberOf) {
+    return (
+      <>
+        <TopNav user={user} />
+        <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16 text-center">
+          <h1 className="text-xl font-semibold text-white">{t.applyAcademyTitle}</h1>
+          <p className="text-sm text-slate-400 mt-2">{t.belongsToAcademy(memberOf.academyName)}</p>
+          <div className="mt-6">
+            <PrimaryButton
+              type="button"
+              onClick={() => router.push(`/coach/academies/${memberOf.academyId}`)}
+              className="w-auto px-5"
+            >
+              {t.manageThatAcademy}
+            </PrimaryButton>
+          </div>
+        </main>
+      </>
+    );
+  }
+
+  if (effectiveMode === "choose") {
+    return (
+      <>
+        <TopNav user={user} />
+        <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-6">
+          <PageHeader
+            title={t.newOrBranchTitle}
+            back={{ label: t.backToDashboard, onClick: () => router.push("/coach") }}
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-ink-700 border border-ink-600/70 rounded-xl p-6 flex flex-col gap-3">
+              <span className="w-10 h-10 rounded-lg bg-flag/15 border border-flag/30 text-flag flex items-center justify-center">
+                <GitBranch size={20} />
+              </span>
+              <div className="text-base font-semibold text-white">{t.branchOption}</div>
+              <p className="text-sm text-slate-400 leading-relaxed">{t.branchOptionBody}</p>
+              {owned.length > 1 && (
+                <Select
+                  value={String(branchSource?.academyId ?? "")}
+                  onChange={(e) => setBranchSourceId(Number(e.target.value))}
+                  aria-label={t.branchOfSelect}
+                >
+                  {owned.map((a) => (
+                    <option key={a.academyId} value={a.academyId}>
+                      {a.academyName}
+                    </option>
+                  ))}
+                </Select>
+              )}
+              <PrimaryButton type="button" onClick={startBranch} className="w-auto px-5 mt-auto self-start">
+                {t.continueLabel}
+              </PrimaryButton>
+            </div>
+            <div className="bg-ink-700 border border-ink-600/70 rounded-xl p-6 flex flex-col gap-3">
+              <span className="w-10 h-10 rounded-lg bg-ink-800 border border-ink-600 text-slate-300 flex items-center justify-center">
+                <Building2 size={20} />
+              </span>
+              <div className="text-base font-semibold text-white">{t.newAcademyOption}</div>
+              <p className="text-sm text-slate-400 leading-relaxed">{t.newAcademyOptionBody}</p>
+              <PrimaryButton type="button" onClick={startNew} className="w-auto px-5 mt-auto self-start">
+                {t.continueLabel}
+              </PrimaryButton>
+            </div>
+          </div>
+        </main>
+      </>
+    );
+  }
+
   return (
     <>
       <TopNav user={user} />
@@ -188,6 +298,18 @@ export default function ApplyAcademyPage() {
           noValidate
           className="bg-ink-700 border border-ink-600/70 rounded-xl card-shadow p-5 sm:p-7"
         >
+          {effectiveMode === "branch" && branchSource && (
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-flag/30 bg-flag/10 px-4 py-3 text-sm text-slate-100">
+              <span>{t.branchBanner(branchSource.academyName)}</span>
+              <button
+                type="button"
+                onClick={() => setMode("choose")}
+                className="text-xs text-flag hover:text-flag-hover font-medium"
+              >
+                {t.changeChoice}
+              </button>
+            </div>
+          )}
           <SectionHeader title={t.academyDetails} />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5">
             <div className="sm:col-span-2">

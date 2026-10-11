@@ -1,6 +1,9 @@
+import type { AcademyDTO } from "@/types/dashboard";
+
 // Coach-portal-specific types mirroring backend DTOs.
 
 /** A player as the coach of their academy sees them. The national ID is already masked by the server. */
+/** (see the end of this file for the academy types) */
 export interface CoachPlayer {
   playerId: number;
   firstName: string;
@@ -50,6 +53,10 @@ export interface PublicUserSummary {
   lastName: string;
   fullName: string;
   hasPlayerProfile: boolean;
+  /** NOT_A_COACH, FREE (can be invited) or TIED (owns or belongs to an academy). */
+  coachState: "NOT_A_COACH" | "FREE" | "TIED";
+  /** NOT_A_PLAYER, RELEASED (free to be claimed) or IN_ACADEMY. */
+  playerState: "NOT_A_PLAYER" | "RELEASED" | "IN_ACADEMY";
   hasProfilePhoto: boolean;
   profilePhotoUrl: string | null;
 }
@@ -77,3 +84,43 @@ export const BELTS: BeltOption[] = [
   { beltId: 9, label: { en: "8th Dan Black Belt", ar: "حزام أسود ٨ دان" }, isBlack: true },
   { beltId: 10, label: { en: "9th Dan Black Belt", ar: "حزام أسود ٩ دان" }, isBlack: true },
 ];
+
+// ── Academies, coaches and releasing players ────────────────────────────────
+
+/** What a coach who belongs to an academy (but does not own it) may do there. */
+export type AcademyAccess = "NONE" | "VIEW" | "EDIT";
+
+/** An academy as the coach sees it in their own panel. Owners always have EDIT. */
+export interface CoachAcademy extends AcademyDTO {
+  role: "OWNER" | "COACH";
+  access: AcademyAccess;
+  /** Owners only: the default name for a new branch, e.g. "Champions Academy 2". */
+  suggestedBranchName: string | null;
+  /** Active players the coach may see in it (0 without view access). */
+  playerCount: number;
+  /** The owner plus the coaches who belong to it. */
+  coachCount: number;
+}
+
+export interface CoachMember {
+  coachId: number;
+  userId: number | null;
+  name: string;
+  beltName: string | null;
+  role: "OWNER" | "COACH";
+  access: AcademyAccess;
+}
+
+export interface AcademyInvite {
+  inviteId: number;
+  academyId: number;
+  academyName: string;
+  coachId: number;
+  coachUserId: number | null;
+  coachName: string;
+  invitedByName: string | null;
+  access: AcademyAccess;
+  status: string;
+  createdAt: string;
+  expiresAt: string;
+}

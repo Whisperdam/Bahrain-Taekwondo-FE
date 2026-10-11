@@ -254,6 +254,7 @@ function specLabel(spec: string, lang: "en" | "ar"): string {
     REFEREE: { en: "Referee", ar: "حكم" },
     JUDGE: { en: "Judge", ar: "حكم جانبي" },
     COACH_REFEREE: { en: "Coach-Referee", ar: "مدرب وحكم" },
+    OFFICIAL: { en: "Official", ar: "إداري" },
   };
   return dict[spec]?.[lang] ?? spec;
 }

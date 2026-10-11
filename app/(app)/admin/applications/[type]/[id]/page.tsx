@@ -520,6 +520,7 @@ function AcademyFields({
   return (
     <>
       <InfoRow label={t.proposedName}>{app.proposedName}</InfoRow>
+      {app.branchOfAcademyName && <InfoRow label={t.branchOfLabel}>{app.branchOfAcademyName}</InfoRow>}
       <InfoRow label={t.proposedLocation}>{app.proposedLocation}</InfoRow>
       <InfoRow label={t.proposedPhone}>
         {app.proposedPhone && (

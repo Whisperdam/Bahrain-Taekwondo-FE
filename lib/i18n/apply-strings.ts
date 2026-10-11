@@ -51,6 +51,7 @@ export const APPLY_STRINGS = {
     spec_REFEREE: "Referee",
     spec_JUDGE: "Judge",
     spec_COACH_REFEREE: "Coach-Referee",
+    spec_OFFICIAL: "Official (table staff, tournament director…)",
 
     // Belt levels
     belt_WHITE: "White",
@@ -112,6 +113,20 @@ export const APPLY_STRINGS = {
     submitFailed:
       "We couldn't submit your application. Please check your details and try again.",
     docsRequired: "Please upload all required documents before submitting.",
+
+    // ── New academy or branch
+    newOrBranchTitle: "What would you like to open?",
+    newAcademyOption: "A new academy",
+    newAcademyOptionBody: "A separate academy with its own name and details.",
+    branchOption: "A branch of my academy",
+    branchOptionBody: "Starts with your academy's details filled in. Change anything that's different.",
+    branchOfSelect: "Branch of",
+    branchBanner: (name: string) => `This is a branch of ${name}. Its details are filled in from it; change what's different.`,
+    changeChoice: "Change",
+    belongsToAcademy: (name: string) =>
+      `You belong to ${name}. Leave it before opening an academy of your own.`,
+    manageThatAcademy: "Open that academy",
+    continueLabel: "Continue",
   },
   ar: {
     applyCoachTitle: "تقديم كمدرّب",
@@ -160,6 +175,7 @@ export const APPLY_STRINGS = {
     spec_REFEREE: "حكم",
     spec_JUDGE: "حكم جانبي",
     spec_COACH_REFEREE: "مدرب وحكم",
+    spec_OFFICIAL: "إداري (طاولة، مدير بطولة…)",
 
     belt_WHITE: "أبيض",
     belt_YELLOW: "أصفر",
@@ -214,11 +230,24 @@ export const APPLY_STRINGS = {
 
     submitFailed: "تعذر إرسال الطلب. تحقق من البيانات وحاول مرة أخرى.",
     docsRequired: "يرجى رفع جميع المستندات المطلوبة قبل الإرسال.",
+
+    newOrBranchTitle: "ماذا تريد أن تفتح؟",
+    newAcademyOption: "أكاديمية جديدة",
+    newAcademyOptionBody: "أكاديمية مستقلة باسمها وتفاصيلها.",
+    branchOption: "فرع من أكاديميتي",
+    branchOptionBody: "تبدأ بتفاصيل أكاديميتك معبّأة مسبقًا. غيّر ما يختلف.",
+    branchOfSelect: "فرع من",
+    branchBanner: (name: string) => `هذا فرع من ${name}. تفاصيله معبّأة منها؛ غيّر ما يختلف.`,
+    changeChoice: "تغيير",
+    belongsToAcademy: (name: string) =>
+      `أنت تنتمي إلى ${name}. غادرها قبل أن تفتح أكاديمية خاصة بك.`,
+    manageThatAcademy: "فتح تلك الأكاديمية",
+    continueLabel: "متابعة",
   },
 } as const;
 
 export type ApplyLang = "en" | "ar";
-export type ApplyStrings = (typeof APPLY_STRINGS)["en"];
+export type ApplyStrings = (typeof APPLY_STRINGS)[keyof typeof APPLY_STRINGS];
 
 type BeltKey =
   | "belt_WHITE"

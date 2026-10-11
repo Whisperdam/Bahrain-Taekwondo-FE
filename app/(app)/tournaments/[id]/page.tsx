@@ -142,7 +142,8 @@ export default function TournamentDetailsPage({
 
   const tournament = tournamentQ.data;
   const roster = rosterQ.data ?? [];
-  const myAcademies = academiesQ.data ?? [];
+  // entering and withdrawing players needs edit access (owners always have it)
+  const myAcademies = (academiesQ.data ?? []).filter((a) => a.access === "EDIT");
   const myAcademyIds = new Set(myAcademies.map((a) => a.academyId));
 
   const notFound =

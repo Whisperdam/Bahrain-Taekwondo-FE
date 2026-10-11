@@ -13,6 +13,7 @@ export const OFFICIAL_STRINGS = {
     specREFEREE: "Referee",
     specJUDGE: "Judge",
     specCOACH_REFEREE: "Coach-referee",
+    specOFFICIAL: "Official",
     levelNATIONAL: "National",
     levelREGIONAL: "Regional",
     levelINTERNATIONAL: "International",
@@ -25,7 +26,7 @@ export const OFFICIAL_STRINGS = {
     certExpiredBefore: (date: string) => `Certification ends ${date}, before the tournament`,
 
     // ── Tournament referee list
-    rosterTitle: "Referees",
+    rosterTitle: "Referees & officials",
     rosterSub:
       "Who takes part in this tournament. Only the officials listed here (and admins) can enter its match results. Roles aren't tracked: referees rotate between roles during the day.",
     rosterCount: (n: number) => `${n} ${n === 1 ? "official" : "officials"}`,
@@ -50,7 +51,7 @@ export const OFFICIAL_STRINGS = {
     adding: "Adding…",
 
     // ── Directory
-    directoryTitle: "Officials",
+    directoryTitle: "Referees & officials",
     directorySub: "Approved referees and judges, and the tournaments each of them took part in.",
     noOfficials: "No approved officials yet.",
     tournamentCount: (n: number) => `${n} ${n === 1 ? "tournament" : "tournaments"}`,
@@ -70,6 +71,7 @@ export const OFFICIAL_STRINGS = {
     specREFEREE: "حكم",
     specJUDGE: "محكّم",
     specCOACH_REFEREE: "مدرب وحكم",
+    specOFFICIAL: "إداري",
     levelNATIONAL: "وطني",
     levelREGIONAL: "إقليمي",
     levelINTERNATIONAL: "دولي",
@@ -81,7 +83,7 @@ export const OFFICIAL_STRINGS = {
     certExpires: (date: string) => `معتمد حتى ${date}`,
     certExpiredBefore: (date: string) => `تنتهي الشهادة في ${date}، قبل البطولة`,
 
-    rosterTitle: "الحكّام",
+    rosterTitle: "الحكّام والإداريون",
     rosterSub:
       "المشاركون في هذه البطولة. المدرجون هنا فقط (والمشرفون) يمكنهم إدخال نتائج مبارياتها. لا تُسجَّل الأدوار، فالحكّام يتبادلون الأدوار خلال اليوم.",
     rosterCount: (n: number) => `${n} من الحكّام`,
@@ -103,7 +105,7 @@ export const OFFICIAL_STRINGS = {
     addSelected: (n: number) => (n === 0 ? "إضافة" : `إضافة ${n}`),
     adding: "جارٍ الإضافة…",
 
-    directoryTitle: "الحكّام",
+    directoryTitle: "الحكّام والإداريون",
     directorySub: "الحكّام والمحكّمون المعتمدون، والبطولات التي شارك فيها كل منهم.",
     noOfficials: "لا يوجد حكّام معتمدون بعد.",
     tournamentCount: (n: number) => `${n} بطولة`,

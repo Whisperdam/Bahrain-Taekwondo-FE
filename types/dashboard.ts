@@ -62,6 +62,23 @@ export interface AcademyDTO {
   status?: "ACTIVE" | "INACTIVE";
   owningCoachId?: number | null;
   owningCoachName?: string | null;
+  /** The academy this one is a branch of; null for a root academy. */
+  parentAcademyId?: number | null;
+  parentAcademyName?: string | null;
+}
+
+/** A branch listed on its root academy's page. */
+export interface AcademyBranchDTO {
+  academyId: number;
+  academyName: string;
+  location: string | null;
+}
+
+/** A coach listed on their academy's page. */
+export interface AcademyStaffDTO {
+  userId: number;
+  name: string;
+  role: "OWNER" | "COACH";
 }
 
 /** Public-safe roster row from GET /api/academies/{id}/players. */

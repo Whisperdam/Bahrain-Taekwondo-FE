@@ -2,8 +2,10 @@ import apiClient from "@/lib/api/client";
 import type {
   TournamentDTO,
   NationalRankingDTO,
+  AcademyBranchDTO,
   AcademyDTO,
   AcademyPlayerDTO,
+  AcademyStaffDTO,
   PageResponse,
 } from "@/types/dashboard";
 
@@ -130,5 +132,17 @@ export async function listRankings(
   const res = await apiClient.get<PageResponse<NationalRankingDTO>>(
     `/api/rankings?${p}`,
   );
+  return res.data;
+}
+
+/** The active branches of an academy (signed-in users). */
+export async function fetchAcademyBranches(academyId: number): Promise<AcademyBranchDTO[]> {
+  const res = await apiClient.get<AcademyBranchDTO[]>(`/api/academies/${academyId}/branches`);
+  return res.data;
+}
+
+/** The coaches of an academy (signed-in users). */
+export async function fetchAcademyStaff(academyId: number): Promise<AcademyStaffDTO[]> {
+  const res = await apiClient.get<AcademyStaffDTO[]>(`/api/academies/${academyId}/coaches`);
   return res.data;
 }

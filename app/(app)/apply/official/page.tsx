@@ -295,6 +295,7 @@ export default function ApplyOfficialPage() {
                     <option value="REFEREE">{t.spec_REFEREE}</option>
                     <option value="JUDGE">{t.spec_JUDGE}</option>
                     <option value="COACH_REFEREE">{t.spec_COACH_REFEREE}</option>
+                    <option value="OFFICIAL">{t.spec_OFFICIAL}</option>
                   </Select>
                 </Field>
                 <div className="sm:col-span-2">
